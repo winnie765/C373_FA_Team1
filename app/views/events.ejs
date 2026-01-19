@@ -1,0 +1,35 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>All Events</h1>
+    <p class="muted">Browse concerts and purchase NFT tickets securely.</p>
+  </div>
+
+  <div class="grid">
+    <% events.forEach(ev => { 
+      const anyAvailable = ev.ticketTypes.some(t => t.sold < t.maxSupply);
+      const status = anyAvailable ? "Available" : "Sold Out";
+    %>
+      <article class="card">
+        <div class="card-img" style="background-image:url('<%= ev.image %>')"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <div>
+              <div class="card-title"><%= ev.title %></div>
+              <div class="muted small"><%= ev.artist %> • <%= ev.date %> • <%= ev.venue %></div>
+            </div>
+            <span class="badge <%= status === 'Available' ? 'ok' : 'bad' %>"><%= status %></span>
+          </div>
+          <div class="card-bottom">
+            <div class="price">From $<%= Math.min(...ev.ticketTypes.map(t=>t.priceSGD)) %></div>
+            <a class="btn btn-view btn-sm" href="/events/<%= ev.id %>">View Concert</a>
+          </div>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,41 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>Confirm Purchase</h1>
+    <p class="muted">Connect MetaMask to pay and mint your NFT ticket.</p>
+  </div>
+
+  <section class="checkout-card">
+    <div class="checkout-img" style="background-image:url('<%= event.image %>')"></div>
+    <div class="checkout-body">
+      <div class="checkout-title"><%= event.title %></div>
+      <div class="muted small"><%= event.artist %> • <%= event.date %> • <%= event.venue %></div>
+
+      <div class="pill-row">
+        <span class="pill"><%= ticketType.name %></span>
+        <span class="pill">$<%= ticketType.priceSGD %></span>
+      </div>
+
+      <div class="progress">
+        <div class="pitem" id="p-wallet">Wallet: Not connected</div>
+        <div class="pitem" id="p-pay">Payment: Pending</div>
+        <div class="pitem" id="p-mint">Mint: Pending</div>
+        <div class="pitem" id="p-reward">Rewards: Pending</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" type="button" onclick="TicketNFT_UI.connectWallet()">Connect MetaMask</button>
+        <button class="btn btn-primary" type="button"
+          onclick="TicketNFT_UI.buyTicketFlow(<%= event.id %>, <%= ticketType.typeId %>, <%= ticketType.priceSGD %>)">
+          Confirm & Mint
+        </button>
+      </div>
+
+      <div class="muted small">Prototype note: This works with Hardhat local chain (recommended) or will simulate if contract not deployed.</div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

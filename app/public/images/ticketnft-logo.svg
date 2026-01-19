@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<rect x="48" y="96" width="416" height="320" rx="72" fill="#7c3aed"/>
+<path d="M152 190h208v28H152zm0 66h208v28H152zm0 66h140v28H152z" fill="#fff" opacity=".95"/>
+<path d="M170 140h20v36h-20zm0 232h20v36h-20zm152-232h20v36h-20zm0 232h20v36h-20z" fill="#fff"/>
+<text x="305" y="356" font-family="Inter, Arial" font-weight="800" font-size="54" fill="#fff">NFT</text>
+</svg>

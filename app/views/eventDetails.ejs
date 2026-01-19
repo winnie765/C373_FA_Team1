@@ -1,0 +1,52 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <section class="detail-hero">
+    <div class="detail-img" style="background-image:url('<%= event.image %>')"></div>
+    <div class="detail-info">
+      <div class="detail-label">Event Details</div>
+      <h1><%= event.title %></h1>
+      <div class="detail-meta">
+        <div class="detail-artist"><%= event.artist %></div>
+        <div class="detail-row">
+          <span><%= event.date %></span>
+        </div>
+        <div class="detail-row">
+          <span><%= event.time %></span>
+        </div>
+        <div class="detail-row">
+          <span><%= event.venue %></span>
+        </div>
+      </div>
+      <p class="desc"><%= event.description %></p>
+
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Choose Ticket Type</h2>
+
+    <div class="stack">
+      <% event.ticketTypes.forEach(t => { %>
+        <div class="row">
+          <div>
+            <div class="row-title"><%= t.name %></div>
+            <div class="muted small"><%= t.remaining %>/<%= t.maxSupply %> left</div>
+          </div>
+
+          <div class="row-right">
+            <div class="price">$<%= t.priceSGD %></div>
+            <% if (t.soldOut) { %>
+              <button class="btn btn-disabled" disabled>Sold Out</button>
+            <% } else { %>
+              <a class="btn btn-primary" href="/tickets/checkout?eventId=<%= event.id %>&typeId=<%= t.typeId %>">Buy Ticket</a>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

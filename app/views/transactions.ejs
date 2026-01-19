@@ -1,0 +1,22 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>Transaction History</h1>
+    <p class="muted">Prototype view (stored in your browser).</p>
+  </div>
+
+  <div id="txEmpty" class="empty">
+    <div class="muted">No transactions yet.</div>
+  </div>
+  <div id="txList" class="stack" style="display:none;"></div>
+</main>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    TicketNFT_UI.renderTxHistory();
+  });
+</script>
+
+<%- include('partials/footer') %>

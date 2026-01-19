@@ -1,0 +1,24 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>My Tickets</h1>
+    <p class="muted">Your NFT tickets stored in this browser (prototype) and/or your wallet.</p>
+  </div>
+
+  <div id="ticketsEmpty" class="empty">
+    <div class="muted">No tickets yet.</div>
+    <a class="btn btn-primary" href="/events">Browse Events</a>
+  </div>
+
+  <div id="ticketsGrid" class="grid" style="display:none;"></div>
+</main>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    TicketNFT_UI.renderMyTickets();
+  });
+</script>
+
+<%- include('partials/footer') %>

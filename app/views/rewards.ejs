@@ -1,0 +1,41 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>Loyalty Rewards</h1>
+    <p class="muted">Earn TOK when you buy tickets and redeem for perks.</p>
+  </div>
+
+  <section class="rewards-card">
+    <div>
+      <div class="muted small">Your TOK Balance</div>
+      <div class="big" id="tokBalance">0</div>
+    </div>
+    <div class="stack">
+      <div class="row">
+        <div>
+          <div class="row-title">Earn TOK</div>
+          <div class="muted small">+10 TOK per ticket purchase</div>
+        </div>
+        <span class="pill">Auto</span>
+      </div>
+
+      <div class="row">
+        <div>
+          <div class="row-title">Redeem Rewards</div>
+          <div class="muted small">Use TOK for discounts and perks</div>
+        </div>
+        <a class="btn btn-primary" href="/rewards/redeem">Redeem</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    TicketNFT_UI.renderRewards();
+  });
+</script>
+
+<%- include('partials/footer') %>

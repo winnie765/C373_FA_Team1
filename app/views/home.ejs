@@ -1,0 +1,47 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <section class="hero">
+    <span class="hero-badge">NFT Ticketing Platform</span>
+    <h1>Live Concerts,<br/><span class="accent">Digital Tickets</span></h1>
+    <p class="muted">
+      Secure your spot at the hottest events with blockchain-powered NFT tickets.
+      Earn rewards with every purchase.
+    </p>
+    <div class="search-bar">
+      <input class="search-input" type="text" placeholder="Search by Event" aria-label="Search events"/>
+      <span class="search-icon" aria-hidden="true">🔍</span>
+    </div>
+  </section>
+
+  <section class="section event-section">
+    <div class="section-head">
+      <h2>Upcoming Concerts</h2>
+    </div>
+
+    <div class="event-list">
+      <% events.forEach(ev => {
+        const anyAvailable = ev.ticketTypes.some(t => t.sold < t.maxSupply);
+        const status = anyAvailable ? "Available" : "Sold Out";
+      %>
+        <article class="event-card square">
+          <div class="event-image" style="background-image:url('<%= ev.image %>')"></div>
+          <div class="event-card-body">
+            <div class="event-card-top">
+              <div>
+                <div class="event-title"><%= ev.title %></div>
+                <div class="event-artist muted"><%= ev.artist %></div>
+                <div class="event-meta muted"><%= ev.date %></div>
+              </div>
+              <span class="pill <%= status === 'Available' ? 'ok' : 'bad' %>"><%= status %></span>
+            </div>
+            <a class="btn btn-view btn-sm" href="/events/<%= ev.id %>">View Concert</a>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

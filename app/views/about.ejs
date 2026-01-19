@@ -1,0 +1,54 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>About TicketNFT</h1>
+    <p class="muted">A prototype for secure, automated, and rewarding event ticketing.</p>
+  </div>
+
+  <section class="about">
+    <div class="about-card">
+      <h2>Mission</h2>
+      <p class="muted">Build a ticketing flow that is verifiable, fair, and transparent for fans and organizers.</p>
+      <ul class="about-list">
+        <li>Improve ticket security and reduce fraud with NFT tickets.</li>
+        <li>Automate purchase and minting using smart contracts.</li>
+        <li>Reward loyal customers with TOK incentives.</li>
+      </ul>
+    </div>
+
+    <div class="about-card">
+      <h2>What You Can Do</h2>
+      <ul class="about-list">
+        <li>Browse events and buy tickets through MetaMask.</li>
+        <li>View My Tickets and track ownership on-chain.</li>
+        <li>Earn and redeem rewards with a token-based loyalty loop.</li>
+        <li>Review transaction history for transparency.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Prototype Notes</h2>
+      <span class="link muted">Local development setup</span>
+    </div>
+    <div class="note-grid">
+      <div class="note-card">
+        <div class="note-title">Local Chain</div>
+        <p class="muted">Run Hardhat locally to deploy the NFT ticket and rewards contracts.</p>
+      </div>
+      <div class="note-card">
+        <div class="note-title">Wallet Setup</div>
+        <p class="muted">Connect MetaMask to the Hardhat network and import a dev account.</p>
+      </div>
+      <div class="note-card">
+        <div class="note-title">Rewards Prototype</div>
+        <p class="muted">TOK rewards are stored in localStorage for simplicity.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

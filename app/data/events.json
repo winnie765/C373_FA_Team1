@@ -1,0 +1,80 @@
+[
+  {
+    "id": 1,
+    "title": "Acoustic Nights",
+    "artist": "John Mayer",
+    "date": "2026-02-18",
+    "time": "8:00 PM",
+    "venue": "The Star Theatre, SG",
+    "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
+    "description": "A special acoustic set featuring fan favorites and new material.",
+    "ticketTypes": [
+      {
+        "typeId": 0,
+        "name": "General Admission",
+        "priceSGD": 120,
+        "maxSupply": 500,
+        "sold": 128
+      },
+      {
+        "typeId": 1,
+        "name": "VIP",
+        "priceSGD": 250,
+        "maxSupply": 100,
+        "sold": 93
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Neon Dreams Festival",
+    "artist": "Various Artists",
+    "date": "2026-03-07",
+    "time": "6:30 PM",
+    "venue": "Singapore Indoor Stadium",
+    "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
+    "description": "One-night festival with EDM headliners and immersive visuals.",
+    "ticketTypes": [
+      {
+        "typeId": 0,
+        "name": "Standard",
+        "priceSGD": 98,
+        "maxSupply": 800,
+        "sold": 800
+      },
+      {
+        "typeId": 1,
+        "name": "Premium",
+        "priceSGD": 168,
+        "maxSupply": 200,
+        "sold": 144
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Campus Carnival Live",
+    "artist": "Student Acts",
+    "date": "2026-04-11",
+    "time": "4:00 PM",
+    "venue": "RP Lawn",
+    "image": "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80",
+    "description": "School carnival with live performances, food booths, and games.",
+    "ticketTypes": [
+      {
+        "typeId": 0,
+        "name": "Entry Pass",
+        "priceSGD": 10,
+        "maxSupply": 300,
+        "sold": 57
+      },
+      {
+        "typeId": 1,
+        "name": "Fast Lane",
+        "priceSGD": 25,
+        "maxSupply": 50,
+        "sold": 22
+      }
+    ]
+  }
+]

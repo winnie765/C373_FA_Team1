@@ -1,0 +1,16 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <section class="success">
+    <div class="check">✓</div>
+    <h1>Purchase Complete!</h1>
+    <p class="muted">Your ticket has been minted as an NFT and saved to your wallet.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="/tickets/my">View My Tickets</a>
+      <a class="btn btn-ghost" href="/events">Buy Another</a>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>

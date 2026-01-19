@@ -1,0 +1,47 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>Redeem Rewards</h1>
+    <p class="muted">Spend TOK to unlock perks.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card mini">
+      <div class="card-body">
+        <div class="card-title">5$ Discount</div>
+        <p class="muted small">Costs 20 TOK</p>
+        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(20, '5$ Discount')">Redeem</button>
+      </div>
+    </div>
+
+    <div class="card mini">
+      <div class="card-body">
+        <div class="card-title">Free Shipping (Merch)</div>
+        <p class="muted small">Costs 30 TOK</p>
+        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(30, 'Free Shipping')">Redeem</button>
+      </div>
+    </div>
+
+    <div class="card mini">
+      <div class="card-body">
+        <div class="card-title">VIP Raffle Entry</div>
+        <p class="muted small">Costs 50 TOK</p>
+        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(50, 'VIP Raffle')">Redeem</button>
+      </div>
+    </div>
+
+    <div class="card mini">
+      <div class="card-body">
+        <div class="card-title">Early Access Pass</div>
+        <p class="muted small">Costs 40 TOK</p>
+        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(40, 'Early Access')">Redeem</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast muted small" id="redeemMsg" style="margin-top:16px;"></div>
+</main>
+
+<%- include('partials/footer') %>
