@@ -9,6 +9,7 @@ import eventRoutes from "./routes/events.js";
 import ticketRoutes from "./routes/tickets.js";
 import rewardRoutes from "./routes/rewards.js";
 import txRoutes from "./routes/transactions.js";
+import apiRoutes from "./routes/api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,6 +38,7 @@ app.use("/events", eventRoutes);
 app.use("/tickets", ticketRoutes);
 app.use("/rewards", rewardRoutes);
 app.use("/transactions", txRoutes);
+app.use("/", apiRoutes);
 
 // 404
 app.use((req, res) => {
