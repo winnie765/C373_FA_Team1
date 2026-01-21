@@ -3,8 +3,10 @@
 
 <main class="container">
   <div class="page-head">
-    <h1>All Events</h1>
-    <p class="muted">Browse concerts and purchase NFT tickets securely.</p>
+    <h1><%= (typeof earlyBird !== "undefined" && earlyBird) ? "Early Bird Tickets" : "All Events" %></h1>
+    <p class="muted">
+      <%= (typeof earlyBird !== "undefined" && earlyBird) ? "Tickets still within the first 100 purchases." : "Browse concerts and purchase NFT tickets securely." %>
+    </p>
   </div>
 
   <div class="grid">

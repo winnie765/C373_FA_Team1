@@ -1,47 +1,88 @@
 <%- include('partials/header', { title }) %>
 <%- include('partials/navbar') %>
 
-<main class="container">
-  <div class="page-head">
-    <h1>Redeem Rewards</h1>
-    <p class="muted">Spend TOK to unlock perks.</p>
+<main class="container redeem-page">
+  <div class="redeem-head">
+    <div>
+      <h1>Redeem Rewards</h1>
+      <p class="muted">Spend TOK to unlock perks.</p>
+    </div>
+    <div class="redeem-pill">
+      <span id="tokBalance">0</span> TOK available
+    </div>
   </div>
 
-  <div class="grid">
-    <div class="card mini">
-      <div class="card-body">
-        <div class="card-title">5$ Discount</div>
-        <p class="muted small">Costs 20 TOK</p>
-        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(20, '5$ Discount')">Redeem</button>
+  <div class="redeem-grid">
+    <article class="redeem-card">
+      <div class="redeem-card-top">
+        <div class="redeem-icon">D5</div>
+        <div class="redeem-cost">20 TOK</div>
       </div>
-    </div>
+      <div class="redeem-title">$5 Discount</div>
+      <div class="redeem-desc">Get $5 off your next ticket purchase</div>
+      <button class="btn btn-primary btn-sm redeem-btn" data-redeem-cost="20"
+        onclick="TicketNFT_UI.redeem(20, '$5 Discount')">Redeem</button>
+    </article>
 
-    <div class="card mini">
-      <div class="card-body">
-        <div class="card-title">Free Shipping (Merch)</div>
-        <p class="muted small">Costs 30 TOK</p>
-        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(30, 'Free Shipping')">Redeem</button>
+    <article class="redeem-card">
+      <div class="redeem-card-top">
+        <div class="redeem-icon">D20</div>
+        <div class="redeem-cost">45 TOK</div>
       </div>
-    </div>
+      <div class="redeem-title">$20 Discount</div>
+      <div class="redeem-desc">Get $20 off your next ticket purchase</div>
+      <button class="btn btn-primary btn-sm redeem-btn" data-redeem-cost="45"
+        onclick="TicketNFT_UI.redeem(45, '$20 Discount')">Redeem</button>
+    </article>
 
-    <div class="card mini">
-      <div class="card-body">
-        <div class="card-title">VIP Raffle Entry</div>
-        <p class="muted small">Costs 50 TOK</p>
-        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(50, 'VIP Raffle')">Redeem</button>
-      </div>
-    </div>
 
-    <div class="card mini">
-      <div class="card-body">
-        <div class="card-title">Early Access Pass</div>
-        <p class="muted small">Costs 40 TOK</p>
-        <button class="btn btn-primary btn-sm" onclick="TicketNFT_UI.redeem(40, 'Early Access')">Redeem</button>
+
+    <article class="redeem-card">
+      <div class="redeem-card-top">
+        <div class="redeem-icon">EA</div>
+        <div class="redeem-cost">30 TOK</div>
       </div>
-    </div>
+      <div class="redeem-title">Early Access</div>
+      <div class="redeem-desc">24-hour early access to new ticket drops</div>
+      <button class="btn btn-primary btn-sm redeem-btn" data-redeem-cost="30"
+        onclick="TicketNFT_UI.redeem(30, 'Early Access')">Redeem</button>
+    </article>
   </div>
 
   <div class="toast muted small" id="redeemMsg" style="margin-top:16px;"></div>
 </main>
+
+<script>
+  window.addEventListener("DOMContentLoaded", async () => {
+    const msg = document.getElementById("redeemMsg");
+    let bal = Number(localStorage.getItem("ticketnft_tok") || "0");
+    try {
+      const response = await TicketNFT_API.getRewards();
+      if (typeof response?.tokBalance === "number") {
+        bal = response.tokBalance;
+        localStorage.setItem("ticketnft_tok", String(response.tokBalance));
+      }
+    } catch (err) {
+      if (msg) msg.textContent = "Using cached TOK balance.";
+    }
+
+    const balanceEl = document.getElementById("tokBalance");
+    if (balanceEl) balanceEl.textContent = bal;
+
+    document.querySelectorAll(".redeem-btn").forEach(btn => {
+      const cost = Number(btn.dataset.redeemCost || "0");
+      if (!Number.isFinite(cost)) return;
+      if (bal < cost) {
+        btn.disabled = true;
+        btn.classList.add("btn-disabled");
+        btn.textContent = `Need ${cost - bal} more TOK`;
+      } else {
+        btn.disabled = false;
+        btn.classList.remove("btn-disabled");
+        btn.textContent = "Redeem";
+      }
+    });
+  });
+</script>
 
 <%- include('partials/footer') %>

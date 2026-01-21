@@ -1,33 +1,82 @@
 <%- include('partials/header', { title }) %>
 <%- include('partials/navbar') %>
 
-<main class="container">
-  <div class="page-head">
-    <h1>Loyalty Rewards</h1>
-    <p class="muted">Earn TOK when you buy tickets and redeem for perks.</p>
-  </div>
+<main class="container rewards-page">
+  <section class="rewards-hero">
+    <div class="rewards-hero-top"></div>
+    <div class="rewards-hero-body">
+      <div class="rewards-hero-title">
+        <div class="rewards-hero-icon">TN</div>
+        <div>
+          <h1>Loyalty Tokens</h1>
+          <p>Earn tokens, unlock perks</p>
+        </div>
+      </div>
 
-  <section class="rewards-card">
-    <div>
-      <div class="muted small">Your TOK Balance</div>
-      <div class="big" id="tokBalance">0</div>
+      <a class="rewards-balance-card rewards-balance-link" href="/transactions">
+        <div class="rewards-balance-row">
+          <div>
+            <div class="rewards-label">Your Balance</div>
+            <div class="rewards-balance">
+              <span id="tokBalance">0</span>
+              <span class="rewards-token">TOK</span>
+            </div>
+          </div>
+          <div class="rewards-earned">
+            <div class="rewards-label">Total Earned</div>
+            <div class="rewards-earned-value">0 TOK</div>
+          </div>
+        </div>
+        <div class="rewards-progress">
+          <div class="rewards-progress-row">
+            <span>Next reward: $5 Discount</span>
+            <span>0 / 20 TOK</span>
+          </div>
+          <div class="rewards-progress-bar">
+            <span style="width:0%"></span>
+          </div>
+        </div>
+      </a>
     </div>
-    <div class="stack">
-      <div class="row">
-        <div>
-          <div class="row-title">Earn TOK</div>
-          <div class="muted small">+10 TOK per ticket purchase</div>
-        </div>
-        <span class="pill">Auto</span>
-      </div>
+  </section>
 
-      <div class="row">
+  <section class="rewards-how">
+    <h2>How to Use</h2>
+    <div class="rewards-earn-list">
+      <a class="rewards-earn-card rewards-earn-link" href="/rewards/redeem">
+        <div class="rewards-earn-icon rewards-earn-icon-purple">RD</div>
         <div>
-          <div class="row-title">Redeem Rewards</div>
-          <div class="muted small">Use TOK for discounts and perks</div>
+          <div class="rewards-earn-title">Redeem Rewards</div>
+          <div class="rewards-earn-desc">Spend TOK for discounts and perks</div>
         </div>
-        <a class="btn btn-primary" href="/rewards/redeem">Redeem</a>
-      </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="rewards-how">
+    <h2>How to Earn</h2>
+    <div class="rewards-earn-list">
+      <a class="rewards-earn-card rewards-earn-link" href="/events">
+        <div class="rewards-earn-icon rewards-earn-icon-purple">TN</div>
+        <div>
+          <div class="rewards-earn-title">Buy Tickets</div>
+          <div class="rewards-earn-desc">+10 TOK per ticket purchase</div>
+        </div>
+      </a>
+      <a class="rewards-earn-card rewards-earn-link" href="/events?earlyBird=1">
+        <div class="rewards-earn-icon rewards-earn-icon-orange">EB</div>
+        <div>
+          <div class="rewards-earn-title">Early Bird</div>
+          <div class="rewards-earn-desc">+5 TOK for first 100 buyers</div>
+        </div>
+      </a>
+      <a class="rewards-earn-card rewards-earn-link" href="/rewards/referral">
+        <div class="rewards-earn-icon rewards-earn-icon-green">RF</div>
+        <div>
+          <div class="rewards-earn-title">Referrals</div>
+          <div class="rewards-earn-desc">+20 TOK per referral</div>
+        </div>
+      </a>
     </div>
   </section>
 </main>

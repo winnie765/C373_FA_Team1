@@ -244,7 +244,7 @@ window.TicketNFT_UI = {
     if(!grid || !empty) return;
 
     if(!tickets.length){
-      empty.style.display = "block";
+      empty.style.display = "flex";
       grid.style.display = "none";
       return;
     }

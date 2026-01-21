@@ -21,8 +21,18 @@ export function homeNoConnect(req, res) {
 }
 
 export function eventsList(req, res) {
-  const events = loadEvents();
-  res.render("events", { title: "All Events", events });
+  let events = loadEvents();
+  const earlyBird = req.query.earlyBird === "1";
+  if (earlyBird) {
+    events = events.filter(ev =>
+      ev.ticketTypes.some(t => t.sold < t.maxSupply && t.sold < 100)
+    );
+  }
+  res.render("events", {
+    title: earlyBird ? "Early Bird Tickets" : "All Events",
+    events,
+    earlyBird
+  });
 }
 
 export function eventDetails(req, res) {

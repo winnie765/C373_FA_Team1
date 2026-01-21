@@ -1,0 +1,96 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container referral-page">
+  <section class="referral-shell">
+    <aside class="referral-aside">
+      <div class="referral-brand">TicketNFT</div>
+      <a class="referral-back" href="/rewards">Back to Rewards</a>
+    </aside>
+
+    <div class="referral-main">
+      <div class="referral-greeting">
+        <div class="referral-avatar">TN</div>
+        <div id="referralGreeting">Hello!</div>
+      </div>
+
+      <div class="referral-hero">
+        <h1>Earn up to <span class="referral-highlight">20 TOK</span> on every referral.</h1>
+        <p>Share your link with friends. When they buy a ticket, you both earn rewards.</p>
+      </div>
+
+      <div class="referral-steps">
+        <div class="referral-step">
+          <div class="referral-step-icon">1</div>
+          <div>Join Now</div>
+        </div>
+        <div class="referral-step-arrow">&gt;</div>
+        <div class="referral-step">
+          <div class="referral-step-icon">2</div>
+          <div>Share Your Link</div>
+        </div>
+        <div class="referral-step-arrow">&gt;</div>
+        <div class="referral-step">
+          <div class="referral-step-icon">3</div>
+          <div>Enjoy Rewards</div>
+        </div>
+      </div>
+
+      <div class="referral-share">
+        <div class="referral-share-label">Copy the link below and share it with your referee.</div>
+        <div class="referral-share-row">
+          <div class="referral-link-box">
+            <span class="referral-link-icon">LN</span>
+            <input id="referralLink" type="text" readonly value="Loading..." aria-label="Referral link"/>
+          </div>
+          <button class="btn btn-dark" id="copyReferral" type="button">Copy Link</button>
+        </div>
+        <div class="referral-code-row">
+          <span class="muted small">Referral code:</span>
+          <span class="referral-code" id="referralCode">Loading...</span>
+        </div>
+        <div class="referral-hint muted small" id="referralHint">Connected wallet required.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const codeEl = document.getElementById("referralCode");
+    const linkEl = document.getElementById("referralLink");
+    const hintEl = document.getElementById("referralHint");
+    const copyBtn = document.getElementById("copyReferral");
+    const greetEl = document.getElementById("referralGreeting");
+    const wallet = localStorage.getItem("ticketnft_wallet");
+    const origin = window.location.origin;
+
+    if (!wallet) {
+      if (greetEl) greetEl.textContent = "Hello!";
+      if (codeEl) codeEl.textContent = "Connect wallet to generate code";
+      if (linkEl) linkEl.value = `${origin}/signup`;
+      if (copyBtn) copyBtn.disabled = true;
+      if (hintEl) hintEl.textContent = "Connect your wallet to generate a unique code.";
+      return;
+    }
+
+    const clean = wallet.replace(/^0x/i, "");
+    const code = `TN-${clean.slice(0, 6).toUpperCase()}-${clean.slice(-4).toUpperCase()}`;
+    if (greetEl) greetEl.textContent = `Hello, ${wallet.slice(0, 6)}...${wallet.slice(-4)}!`;
+    if (codeEl) codeEl.textContent = code;
+    const link = `${origin}/signup?ref=${encodeURIComponent(code)}`;
+    if (linkEl) linkEl.value = link;
+    if (hintEl) hintEl.textContent = "Copy and share to earn TOK on referrals.";
+
+    copyBtn?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(link);
+        if (hintEl) hintEl.textContent = "Copied to clipboard.";
+      } catch (err) {
+        if (hintEl) hintEl.textContent = "Copy failed. Please select and copy manually.";
+      }
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>
