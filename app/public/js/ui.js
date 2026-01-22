@@ -10,6 +10,12 @@ function getJSON(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
 }
 function setJSON(key, v) { localStorage.setItem(key, JSON.stringify(v)); }
+function walletTicketsKey(wallet) {
+  return wallet ? `${LS_KEYS.tickets}_${wallet.toLowerCase()}` : null;
+}
+function walletTxKey(wallet) {
+  return wallet ? `${LS_KEYS.tx}_${wallet.toLowerCase()}` : null;
+}
 
 function setProgress(id, text, ok = false) {
   const el = document.getElementById(id);
@@ -47,10 +53,10 @@ const TicketNFT_API = {
     const wallet = localStorage.getItem(LS_KEYS.wallet);
     return wallet ? `?wallet=${encodeURIComponent(wallet)}` : "";
   },
-  connectWallet(wallet) {
+  connectWallet(wallet, payload = {}) {
     return apiRequest("/web3ConnectData", {
       method: "POST",
-      body: JSON.stringify({ wallet })
+      body: JSON.stringify({ wallet, ...payload })
     });
   },
   getTickets() {
@@ -80,8 +86,28 @@ function shortAddr(a){
   if(!a) return "";
   return a.slice(0,6) + "..." + a.slice(-4);
 }
+async function getActiveAddress(fallback) {
+  try {
+    if (!window.ethereum) return fallback || null;
+    if (typeof ethers === "undefined") {
+      const accounts = await window.ethereum.request({ method: "eth_accounts" });
+      return accounts?.[0] || fallback || null;
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    return await signer.getAddress();
+  } catch {
+    return fallback || null;
+  }
+}
 
 window.TicketNFT_UI = {
+  updateWalletUI(connected){
+    const logoutForm = document.getElementById("logoutForm");
+    const profileBtn = document.getElementById("profileBtn");
+    if (logoutForm) logoutForm.style.display = connected ? "block" : "none";
+    if (profileBtn) profileBtn.style.display = connected ? "inline-flex" : "none";
+  },
   async connectWallet(){
     if (!window.ethereum) {
       alert("MetaMask not detected. Please install or enable it in your browser.");
@@ -101,12 +127,26 @@ window.TicketNFT_UI = {
       alert("MetaMask connection was cancelled or locked.");
       return null;
     }
+    const activeAddress = await getActiveAddress(r.address);
+    r = { address: activeAddress || r.address };
     setProgress("p-wallet", `Wallet: Connected (${shortAddr(r.address)})`, true);
     const btn = document.getElementById("walletBtn");
     if (btn && r?.address) btn.textContent = shortAddr(r.address);
     if (r?.address) {
       localStorage.setItem(LS_KEYS.wallet, r.address);
-      await TicketNFT_API.connectWallet(r.address);
+      const wKey = walletTicketsKey(r.address);
+      const txKey = walletTxKey(r.address);
+      const cachedTickets = wKey ? getJSON(wKey, []) : getJSON(LS_KEYS.tickets, []);
+      const cachedTx = txKey ? getJSON(txKey, []) : getJSON(LS_KEYS.tx, []);
+      const cachedTok = Number(localStorage.getItem(LS_KEYS.tok) || "0");
+      await TicketNFT_API.connectWallet(r.address, {
+        tickets: cachedTickets,
+        transactions: cachedTx,
+        tokBalance: cachedTok
+      });
+      this.updateWalletUI(true);
+      await this.renderMyTickets?.();
+      await this.renderTxHistory?.();
     }
     return r;
   },
@@ -123,8 +163,10 @@ window.TicketNFT_UI = {
       alert("MetaMask connection was cancelled or locked.");
       return;
     }
-    await TicketNFT_API.connectWallet(w.address);
-    setProgress("p-wallet", `Wallet: Connected (${shortAddr(w.address)})`, true);
+    const walletAddr = await getActiveAddress(w.address);
+    localStorage.setItem(LS_KEYS.wallet, walletAddr);
+    await TicketNFT_API.connectWallet(walletAddr);
+    setProgress("p-wallet", `Wallet: Connected (${shortAddr(walletAddr)})`, true);
 
     // 2) Payment + 3) Mint
     // For prototype we charge 0.001 ETH fixed on local chain, but show SGD price in UI.
@@ -132,18 +174,13 @@ window.TicketNFT_UI = {
     const chainEventId = Math.max(0, Number(eventId) - 1);
     let ethValue = TicketNFT_Config.ethValuePerTicket || "0.001";
     try{
-      const [eventInfo, typeInfo, alreadyBought] = await Promise.all([
+      const [eventInfo, typeInfo] = await Promise.all([
         TicketNFT_TicketContract.getEventInfo(chainEventId),
-        TicketNFT_TicketContract.getTicketType(chainEventId, typeId),
-        TicketNFT_TicketContract.hasBought(w.address, chainEventId, typeId)
+        TicketNFT_TicketContract.getTicketType(chainEventId, typeId)
       ]);
 
       if (!eventInfo?.active) {
         alert("This event is not active.");
-        return;
-      }
-      if (alreadyBought) {
-        alert("You already own this ticket type for this event.");
         return;
       }
       if (typeInfo?.maxSupply !== null && typeInfo?.sold !== null && Number(typeInfo.sold) >= Number(typeInfo.maxSupply)) {
@@ -169,7 +206,7 @@ window.TicketNFT_UI = {
       const tokEarned = TicketNFT_Config.tokPerPurchase || 10;
       const createdAt = new Date().toISOString();
       const stored = await TicketNFT_API.recordPurchase({
-        wallet: w.address,
+        wallet: walletAddr,
         eventId,
         typeId,
         tokenId,
@@ -180,8 +217,16 @@ window.TicketNFT_UI = {
       });
 
       if (stored?.success) {
-        if (stored?.tickets) setJSON(LS_KEYS.tickets, stored.tickets);
-        if (stored?.transactions) setJSON(LS_KEYS.tx, stored.transactions);
+      if (stored?.tickets) {
+        setJSON(LS_KEYS.tickets, stored.tickets);
+        const wKey = walletTicketsKey(walletAddr);
+        if (wKey) setJSON(wKey, stored.tickets);
+      }
+        if (stored?.transactions) {
+          setJSON(LS_KEYS.tx, stored.transactions);
+          const txKey = walletTxKey(walletAddr);
+          if (txKey) setJSON(txKey, stored.transactions);
+        }
         if (typeof stored?.tokBalance === "number") {
           localStorage.setItem(LS_KEYS.tok, String(stored.tokBalance));
         }
@@ -193,11 +238,13 @@ window.TicketNFT_UI = {
           eventId,
           typeId,
           tokenId,
-          wallet: w.address,
+          wallet: walletAddr,
           status: "Valid",
           createdAt
         });
         setJSON(LS_KEYS.tickets, tickets);
+        const wKey = walletTicketsKey(walletAddr);
+        if (wKey) setJSON(wKey, tickets);
 
         const tx = getJSON(LS_KEYS.tx, []);
         tx.unshift({
@@ -205,12 +252,14 @@ window.TicketNFT_UI = {
           eventId,
           typeId,
           tokenId,
-          wallet: w.address,
+          wallet: walletAddr,
           valueEth: ethValue,
           createdAt,
           hash: receipt?.hash || null
         });
         setJSON(LS_KEYS.tx, tx);
+        const txKey = walletTxKey(walletAddr);
+        if (txKey) setJSON(txKey, tx);
       }
       setProgress("p-reward", `Rewards: +${tokEarned} TOK`, true);
 
@@ -235,9 +284,32 @@ window.TicketNFT_UI = {
   },
 
   async renderMyTickets(){
+    const cachedWallet = localStorage.getItem(LS_KEYS.wallet);
     const response = await TicketNFT_API.getTickets();
-    if (response?.tickets) setJSON(LS_KEYS.tickets, response.tickets);
-    const tickets = response?.tickets ?? getJSON(LS_KEYS.tickets, []);
+    if (Array.isArray(response?.tickets) && response.tickets.length) {
+      setJSON(LS_KEYS.tickets, response.tickets);
+      const wKey = walletTicketsKey(cachedWallet);
+      if (wKey) setJSON(wKey, response.tickets);
+    }
+    if (!cachedWallet) {
+      const empty = document.getElementById("ticketsEmpty");
+      const grid = document.getElementById("ticketsGrid");
+      if (grid) grid.style.display = "none";
+      if (empty) {
+        empty.style.display = "flex";
+        empty.innerHTML = `
+          <div class="muted">Connect MetaMask to view your tickets.</div>
+          <button class="btn btn-primary" type="button" onclick="TicketNFT_UI.connectWallet()">Connect Wallet</button>
+        `;
+      }
+      return;
+    }
+
+    const cachedWalletTickets = cachedWallet ? getJSON(walletTicketsKey(cachedWallet), []) : [];
+    const cachedTickets = cachedWalletTickets.length ? cachedWalletTickets : getJSON(LS_KEYS.tickets, []);
+    const tickets = (Array.isArray(response?.tickets) && response.tickets.length)
+      ? response.tickets
+      : cachedTickets;
     const empty = document.getElementById("ticketsEmpty");
     const grid = document.getElementById("ticketsGrid");
 
@@ -262,6 +334,7 @@ window.TicketNFT_UI = {
             <div class="ticket-card-header">
               <div>
                 <div class="card-title">NFT Ticket</div>
+                <div class="muted small">Ticket ID: ${t.tokenId ?? "Pending"}</div>
                 <div class="muted small">${eventLabel} -> ${typeLabel}</div>
               </div>
               <span class="badge ok">${status}</span>
@@ -271,7 +344,7 @@ window.TicketNFT_UI = {
               <span class="ticket-dot"></span>
               <span class="muted small">Wallet ${shortAddr(t.wallet)}</span>
             </div>
-            <div class="ticket-qr">QR: ${t.tokenId || "Pending"}</div>
+            <div class="ticket-qr">QR: ${t.tokenId ?? "Pending"}</div>
             <div class="ticket-footer">
               <div class="muted small">Minted ${minted}</div>
               <a class="btn btn-view btn-sm" href="/events/${t.eventId}">View Event</a>
@@ -283,6 +356,44 @@ window.TicketNFT_UI = {
   },
 
   async renderRewards(){
+    const wallet = localStorage.getItem(LS_KEYS.wallet);
+    if (!wallet) {
+      const balanceCard = document.querySelector(".rewards-balance-card");
+      if (balanceCard) {
+        balanceCard.innerHTML = `
+          <div class="rewards-balance-row">
+            <div>
+              <div class="rewards-label">Your Balance</div>
+              <div class="rewards-balance">
+                <span>0</span>
+                <span class="rewards-token">TOK</span>
+              </div>
+            </div>
+            <div class="rewards-earned">
+              <div class="rewards-label">Total Earned</div>
+              <div class="rewards-earned-value">0 TOK</div>
+            </div>
+          </div>
+          <div class="rewards-progress">
+            <div class="rewards-progress-row">
+              <span>Connect MetaMask to view rewards.</span>
+              <span>0 / 20 TOK</span>
+            </div>
+            <div class="rewards-progress-bar">
+              <span style="width:0%"></span>
+            </div>
+          </div>
+          <div class="rewards-connect">
+            <button class="btn btn-primary" type="button"
+              onclick="event.preventDefault(); event.stopPropagation(); TicketNFT_UI.connectWallet().then(() => window.location.reload())">
+              Connect Wallet
+            </button>
+          </div>
+        `;
+      }
+      return;
+    }
+
     const response = await TicketNFT_API.getRewards();
     const bal = typeof response?.tokBalance === "number"
       ? response.tokBalance
@@ -292,6 +403,57 @@ window.TicketNFT_UI = {
     }
     const el = document.getElementById("tokBalance");
     if(el) el.textContent = bal;
+
+    let tx = [];
+    if (wallet) {
+      const txResponse = await TicketNFT_API.getTransactions();
+      if (Array.isArray(txResponse?.transactions) && txResponse.transactions.length) {
+        setJSON(LS_KEYS.tx, txResponse.transactions);
+        const txKey = walletTxKey(wallet);
+        if (txKey) setJSON(txKey, txResponse.transactions);
+        tx = txResponse.transactions;
+      } else {
+        const cachedWalletTx = getJSON(walletTxKey(wallet), []);
+        tx = cachedWalletTx.length ? cachedWalletTx : getJSON(LS_KEYS.tx, []);
+      }
+    }
+
+    const redeemedTotal = tx
+      .filter(item => item.type === "REDEEM")
+      .reduce((sum, item) => sum + (Number(item.cost) || 0), 0);
+    const earnedTotal = bal + redeemedTotal;
+    const earnedEl = document.getElementById("tokEarned");
+    if (earnedEl) earnedEl.textContent = `${earnedTotal} TOK`;
+
+    const nextRewardCost = 20;
+    const currentForNext = Math.min(bal, nextRewardCost);
+    const currentEl = document.getElementById("nextRewardCurrent");
+    const targetEl = document.getElementById("nextRewardTarget");
+    const barEl = document.getElementById("nextRewardBar");
+    if (currentEl) currentEl.textContent = String(currentForNext);
+    if (targetEl) targetEl.textContent = String(nextRewardCost);
+    if (barEl) barEl.style.width = `${Math.min(100, Math.round((currentForNext / nextRewardCost) * 100))}%`;
+
+    const redeemedList = document.getElementById("redeemedList");
+    const redeemedEmpty = document.getElementById("redeemedEmpty");
+    if (redeemedList && redeemedEmpty) {
+      const redeemed = tx.filter(item => item.type === "REDEEM");
+      if (!redeemed.length) {
+        redeemedList.innerHTML = "";
+        redeemedEmpty.textContent = "No rewards redeemed yet.";
+      } else {
+        redeemedEmpty.textContent = "";
+        redeemedList.innerHTML = redeemed.map(item => `
+          <div class="rewards-earn-card">
+            <div class="rewards-earn-icon rewards-earn-icon-purple">RD</div>
+            <div>
+              <div class="rewards-earn-title">${item.perk}</div>
+              <div class="rewards-earn-desc">Redeemed ${item.cost} TOK • ${new Date(item.createdAt).toLocaleDateString()}</div>
+            </div>
+          </div>
+        `).join("");
+      }
+    }
   },
 
   async redeem(cost, name){
@@ -325,6 +487,9 @@ window.TicketNFT_UI = {
         createdAt: new Date().toISOString()
       });
       setJSON(LS_KEYS.tx, tx);
+      const wallet = localStorage.getItem(LS_KEYS.wallet);
+      const txKey = walletTxKey(wallet);
+      if (txKey) setJSON(txKey, tx);
       return;
     }
 
@@ -333,14 +498,35 @@ window.TicketNFT_UI = {
     }
     if (response?.transactions) {
       setJSON(LS_KEYS.tx, response.transactions);
+      const wallet = localStorage.getItem(LS_KEYS.wallet);
+      const txKey = walletTxKey(wallet);
+      if (txKey) setJSON(txKey, response.transactions);
     }
     if (msg) msg.textContent = `Redeemed: ${name} (-${cost} TOK).`;
   },
 
   async renderTxHistory(){
+    const cachedWallet = localStorage.getItem(LS_KEYS.wallet);
+    if (!cachedWallet) {
+      const empty = document.getElementById("txEmpty");
+      const list = document.getElementById("txList");
+      if (list) list.style.display = "none";
+      if (empty) {
+        empty.style.display = "block";
+        empty.textContent = "Connect MetaMask to view your transactions.";
+      }
+      return;
+    }
     const response = await TicketNFT_API.getTransactions();
-    if (response?.transactions) setJSON(LS_KEYS.tx, response.transactions);
-    const tx = response?.transactions ?? getJSON(LS_KEYS.tx, []);
+    if (Array.isArray(response?.transactions) && response.transactions.length) {
+      setJSON(LS_KEYS.tx, response.transactions);
+      const txKey = walletTxKey(cachedWallet);
+      if (txKey) setJSON(txKey, response.transactions);
+    }
+    const cachedWalletTx = cachedWallet ? getJSON(walletTxKey(cachedWallet), []) : [];
+    const tx = (Array.isArray(response?.transactions) && response.transactions.length)
+      ? response.transactions
+      : (cachedWalletTx.length ? cachedWalletTx : getJSON(LS_KEYS.tx, []));
     const empty = document.getElementById("txEmpty");
     const list = document.getElementById("txList");
 
@@ -370,12 +556,32 @@ window.TicketNFT_UI = {
 // Update wallet button label if connected previously
 window.addEventListener("DOMContentLoaded", async () => {
   const btn = document.getElementById("walletBtn");
+  const logoutForm = document.getElementById("logoutForm");
+  const profileBtn = document.getElementById("profileBtn");
   const cached = localStorage.getItem(LS_KEYS.wallet);
   if (btn && cached) btn.textContent = shortAddr(cached);
+  TicketNFT_UI.updateWalletUI(!!cached);
+  if (cached) {
+    const wKey = walletTicketsKey(cached);
+    const txKey = walletTxKey(cached);
+    const cachedTickets = wKey ? getJSON(wKey, []) : getJSON(LS_KEYS.tickets, []);
+    const cachedTx = txKey ? getJSON(txKey, []) : getJSON(LS_KEYS.tx, []);
+    const cachedTok = Number(localStorage.getItem(LS_KEYS.tok) || "0");
+    await TicketNFT_API.connectWallet(cached, {
+      tickets: cachedTickets,
+      transactions: cachedTx,
+      tokBalance: cachedTok
+    });
+  }
 
   btn?.addEventListener("click", async () => {
     const r = await TicketNFT_UI.connectWallet();
     if(r?.address) localStorage.setItem(LS_KEYS.wallet, r.address);
+  });
+
+  logoutForm?.addEventListener("submit", () => {
+    localStorage.removeItem(LS_KEYS.wallet);
+    TicketNFT_UI.updateWalletUI(false);
   });
 });
 

@@ -25,7 +25,7 @@ contract TicketNFT {
     uint256 public nextTokenId;
     mapping(uint256 => address) public ownerOf; // tokenId -> owner
     mapping(address => uint256[]) public tokensOf; // owner -> tokenIds
-    mapping(address => mapping(uint256 => mapping(uint256 => bool))) public hasBought; // prevent double-buy per type
+    // Allow multiple purchases per ticket type (no per-type lockout).
 
     event EventCreated(uint256 indexed eventId, string title);
     event TicketTypeAdded(uint256 indexed eventId, uint256 indexed typeId, string name, uint256 priceWei, uint256 maxSupply);
@@ -73,9 +73,6 @@ contract TicketNFT {
         require(t.maxSupply > 0, "Type not exist");
         require(t.sold < t.maxSupply, "Sold out");
         require(msg.value == t.priceWei, "Wrong payment");
-
-        require(!hasBought[msg.sender][eventId][typeId], "Already owned");
-        hasBought[msg.sender][eventId][typeId] = true;
 
         t.sold += 1;
 

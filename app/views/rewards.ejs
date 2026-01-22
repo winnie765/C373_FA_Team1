@@ -24,20 +24,26 @@
           </div>
           <div class="rewards-earned">
             <div class="rewards-label">Total Earned</div>
-            <div class="rewards-earned-value">0 TOK</div>
+            <div class="rewards-earned-value" id="tokEarned">0 TOK</div>
           </div>
         </div>
         <div class="rewards-progress">
           <div class="rewards-progress-row">
             <span>Next reward: $5 Discount</span>
-            <span>0 / 20 TOK</span>
+            <span><span id="nextRewardCurrent">0</span> / <span id="nextRewardTarget">20</span> TOK</span>
           </div>
           <div class="rewards-progress-bar">
-            <span style="width:0%"></span>
+            <span id="nextRewardBar" style="width:0%"></span>
           </div>
         </div>
       </a>
     </div>
+  </section>
+
+  <section class="rewards-how rewards-redeemed">
+    <h2>Redeemed Rewards</h2>
+    <div id="redeemedList" class="rewards-earn-list"></div>
+    <div id="redeemedEmpty" class="muted small" style="margin-top:8px;"></div>
   </section>
 
   <section class="rewards-how">

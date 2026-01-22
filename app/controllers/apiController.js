@@ -3,12 +3,22 @@ import {
   getTokPerPurchase,
   getWalletFromReq,
   normalizeWallet,
+  saveWalletState,
   setWalletCookie
 } from "../data/stateStore.js";
 
 function toNumber(value) {
   const num = Number(value);
   return Number.isFinite(num) ? num : null;
+}
+
+function uniqueTokenId(state) {
+  const existing = new Set(state.tickets.map(t => t.tokenId).filter(Number.isFinite));
+  let tokenId = Date.now() % 1000000000;
+  while (existing.has(tokenId)) {
+    tokenId = (tokenId + Math.floor(Math.random() * 1000) + 1) % 1000000000;
+  }
+  return tokenId;
 }
 
 export function connectWallet(req, res) {
@@ -27,6 +37,7 @@ export function connectWallet(req, res) {
   if (tokBalance !== null) {
     state.tok = tokBalance;
   }
+  saveWalletState(wallet);
   setWalletCookie(res, wallet);
   return res.json({ success: true });
 }
@@ -45,7 +56,7 @@ export function recordPurchase(req, res) {
 
   const state = ensureWalletState(wallet);
   const createdAt = req.body?.createdAt || new Date().toISOString();
-  const tokenId = toNumber(req.body?.tokenId);
+  let tokenId = toNumber(req.body?.tokenId);
   const ticket = {
     eventId,
     typeId,
@@ -55,7 +66,12 @@ export function recordPurchase(req, res) {
     createdAt
   };
 
-  if (tokenId === null || !state.tickets.some(t => t.tokenId === tokenId)) {
+  if (tokenId === null || state.tickets.some(t => t.tokenId === tokenId)) {
+    tokenId = uniqueTokenId(state);
+    ticket.tokenId = tokenId;
+  }
+
+  if (!state.tickets.some(t => t.tokenId === tokenId)) {
     state.tickets.push(ticket);
   }
 
@@ -74,6 +90,7 @@ export function recordPurchase(req, res) {
   const tokEarned = toNumber(req.body?.tokEarned);
   state.tok += tokEarned !== null ? tokEarned : getTokPerPurchase();
 
+  saveWalletState(wallet);
   setWalletCookie(res, wallet);
   return res.json({
     success: true,
@@ -110,6 +127,7 @@ export function redeemReward(req, res) {
     createdAt: req.body?.createdAt || new Date().toISOString()
   });
 
+  saveWalletState(wallet);
   setWalletCookie(res, wallet);
   return res.json({
     success: true,

@@ -402,6 +402,7 @@ h1,h2,h3,.brand span,.hero-badge,.event-title,.event-card-top{font-family:"Outfi
   height:100%;
   background:linear-gradient(90deg, rgba(255,255,255,.9), rgba(255,255,255,.6));
 }
+.rewards-connect{margin-top:6px}
 .rewards-how{margin-top:20px}
 .rewards-how h2{margin:0 0 12px 0;font-size:18px}
 .rewards-earn-list{display:flex;flex-direction:column;gap:12px}

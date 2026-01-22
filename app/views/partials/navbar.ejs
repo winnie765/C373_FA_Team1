@@ -15,17 +15,17 @@
   <div class="nav-actions">
     <% if (typeof showConnect === "undefined" || showConnect) { %>
       <button id="walletBtn" class="btn btn-ghost" type="button">Connect</button>
-      <a class="btn btn-ghost btn-profile" href="/profile" aria-label="Profile">
-        <svg class="profile-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M12 12.6c2.54 0 4.6-2.06 4.6-4.6S14.54 3.4 12 3.4 7.4 5.46 7.4 8s2.06 4.6 4.6 4.6Zm0 1.8c-3.5 0-8.2 1.76-8.2 5.3v.9h16.4v-.9c0-3.54-4.7-5.3-8.2-5.3Z"/>
-        </svg>
-      </a>
-      <form class="logout-form" action="/logout" method="post">
-        <button class="btn btn-ghost btn-logout" type="submit">Log Out</button>
-      </form>
     <% } else { %>
-      <a class="btn btn-signin" href="/login">Log In</a>
+      <button id="walletBtn" class="btn btn-signin" type="button">Connect Wallet</button>
     <% } %>
+    <a id="profileBtn" class="btn btn-ghost btn-profile" href="/profile" aria-label="Profile" style="display:none">
+      <svg class="profile-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 12.6c2.54 0 4.6-2.06 4.6-4.6S14.54 3.4 12 3.4 7.4 5.46 7.4 8s2.06 4.6 4.6 4.6Zm0 1.8c-3.5 0-8.2 1.76-8.2 5.3v.9h16.4v-.9c0-3.54-4.7-5.3-8.2-5.3Z"/>
+      </svg>
+    </a>
+    <form id="logoutForm" class="logout-form" action="/logout" method="post" style="display:none">
+      <button class="btn btn-ghost btn-logout" type="submit">Log Out</button>
+    </form>
   </div>
 </nav>
 
