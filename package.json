@@ -1,0 +1,23 @@
+{
+  "name": "c373_fa_team1",
+  "version": "1.0.0",
+  "description": "This is a working school prototype for an NFT concert ticketing app:\r - Browse events\r - Buy ticket (connect MetaMask + pay + mint NFT)\r - View \"My Tickets\"\r - Earn & redeem TOK rewards (prototype: stored locally)\r - View transaction history (prototype: stored locally)",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/winnie765/C373_FA_Team1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/winnie765/C373_FA_Team1/issues"
+  },
+  "homepage": "https://github.com/winnie765/C373_FA_Team1#readme"
+}
