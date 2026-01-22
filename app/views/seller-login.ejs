@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Seller Login</title>
+  <link rel="stylesheet" href="/public/css/style.css" />
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-left">
+      <div class="auth-logo">TicketNFT</div>
+      <h1>Seller Portal</h1>
+      <p>Sign in to create events and manage ticket types.</p>
+      <div class="auth-wave"></div>
+    </div>
+    <div class="auth-right">
+      <h2>Seller Login</h2>
+      <p class="muted">Use the seller credentials provided to you.</p>
+      <% if (error) { %>
+        <div class="auth-error"><%= error %></div>
+      <% } %>
+      <form class="auth-form" method="POST" action="/seller/login">
+        <label class="auth-label">
+          Email
+          <input class="auth-input" type="email" name="email" placeholder="seller@example.com" required />
+        </label>
+        <label class="auth-label">
+          Password
+          <input class="auth-input" type="password" name="password" placeholder="Password" required />
+        </label>
+        <button class="btn btn-auth" type="submit">Sign In</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

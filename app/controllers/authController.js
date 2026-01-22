@@ -9,11 +9,11 @@ export function renderSignup(req, res) {
 }
 
 export function handleSignup(req, res) {
-  const { email, password, confirmPassword } = req.body;
-  if (!email || !password) {
+  const { email, password, confirmPassword, name, phone, role, company } = req.body;
+  if (!name || !email || !phone || !password) {
     return res.status(400).render("signup", {
       title: "Sign Up",
-      error: "Email and password are required."
+      error: "Name, phone, email and password are required."
     });
   }
   if (password.length < 6) {
@@ -28,6 +28,18 @@ export function handleSignup(req, res) {
       error: "Passwords do not match."
     });
   }
+  if (role !== "buyer" && role !== "seller") {
+    return res.status(400).render("signup", {
+      title: "Sign Up",
+      error: "Please choose buyer or seller."
+    });
+  }
+  if (role === "seller" && !company) {
+    return res.status(400).render("signup", {
+      title: "Sign Up",
+      error: "Company name is required for sellers."
+    });
+  }
   if (users.has(email)) {
     return res.status(400).render("signup", {
       title: "Sign Up",
@@ -35,8 +47,9 @@ export function handleSignup(req, res) {
     });
   }
 
-  users.set(email, { email, password });
+  users.set(email, { email, password, name, phone, role, company: role === "seller" ? company : "" });
   res.cookie("authUser", email, { httpOnly: true });
+  res.cookie("authUserRole", role, { httpOnly: true, sameSite: "lax" });
   return res.redirect("/homepage");
 }
 
@@ -51,6 +64,9 @@ export function handleLogin(req, res) {
   }
 
   res.cookie("authUser", email, { httpOnly: true });
+  if (user.role) {
+    res.cookie("authUserRole", user.role, { httpOnly: true, sameSite: "lax" });
+  }
   return res.redirect("/homepage");
 }
 

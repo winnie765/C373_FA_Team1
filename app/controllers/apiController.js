@@ -82,12 +82,16 @@ export function recordPurchase(req, res) {
     tokenId,
     wallet,
     valueEth: req.body?.valueEth || null,
+    discountEth: req.body?.discountEth || 0,
+    tokSpent: req.body?.tokSpent || 0,
     createdAt,
     hash: req.body?.hash || null
   };
   state.transactions.unshift(tx);
 
   const tokEarned = toNumber(req.body?.tokEarned);
+  const tokSpent = Math.max(0, toNumber(req.body?.tokSpent) || 0);
+  state.tok = Math.max(0, state.tok - tokSpent);
   state.tok += tokEarned !== null ? tokEarned : getTokPerPurchase();
 
   saveWalletState(wallet);

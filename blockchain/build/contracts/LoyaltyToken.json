@@ -7281,12 +7281,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x5Aa5E0Fa7900072C12083077f74c2bCf77aee8aF",
-      "transactionHash": "0x187b07ac76535d6ae220165d7b046ab41207a0a3841c058eed197e4fceb362a0"
+      "address": "0x747a3555b1777938278202eD9b7a228322565411",
+      "transactionHash": "0x15bc69704f1d0f044dbd573d5055eed23614781a929e6d8dbd59b9a2e13cb4db"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2026-01-22T18:06:04.553Z",
+  "updatedAt": "2026-01-22T19:22:05.783Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

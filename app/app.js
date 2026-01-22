@@ -10,6 +10,7 @@ import ticketRoutes from "./routes/tickets.js";
 import rewardRoutes from "./routes/rewards.js";
 import txRoutes from "./routes/transactions.js";
 import apiRoutes from "./routes/api.js";
+import sellerRoutes from "./routes/seller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Expose auth status to views
+app.use((req, res, next) => {
+  res.locals.loggedIn = !!req.cookies?.authUser;
+  res.locals.authUserRole = req.cookies?.authUserRole || "";
+  next();
+});
+
 // Static: app assets
 app.use("/public", express.static(path.join(__dirname, "public")));
 
@@ -39,6 +47,7 @@ app.use("/tickets", ticketRoutes);
 app.use("/rewards", rewardRoutes);
 app.use("/transactions", txRoutes);
 app.use("/", apiRoutes);
+app.use("/seller", sellerRoutes);
 
 // 404
 app.use((req, res) => {

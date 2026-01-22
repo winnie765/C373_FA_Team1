@@ -76,5 +76,45 @@
         "sold": 22
       }
     ]
+  },
+  {
+    "id": 4,
+    "title": "KPOP NIght",
+    "artist": "TBD",
+    "date": "2026-01-31",
+    "time": "8 PM",
+    "venue": "Stadium",
+    "image": "",
+    "description": "",
+    "seller": "0x6e8Ab59e5e3CD43a78b1B5449aA522952476F36A",
+    "ticketTypes": [
+      {
+        "typeId": 0,
+        "name": "General",
+        "priceSGD": 80,
+        "maxSupply": 80,
+        "sold": 0
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "ABC",
+    "artist": "TBD",
+    "date": "2026-01-31",
+    "time": "8 PM",
+    "venue": "Stadium",
+    "image": "",
+    "description": "",
+    "seller": "0x6e8Ab59e5e3CD43a78b1B5449aA522952476F36A",
+    "ticketTypes": [
+      {
+        "typeId": 0,
+        "name": "Premium",
+        "priceSGD": 100,
+        "maxSupply": 100,
+        "sold": 0
+      }
+    ]
   }
 ]

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Seller Dashboard</title>
+  <link rel="stylesheet" href="/public/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2>Seller Dashboard</h2>
+        <p class="muted">Manage events and ticket types. Payouts go to the seller wallet set on-chain.</p>
+      </div>
+      <form method="POST" action="/seller/logout" class="logout-form">
+        <button class="btn btn-logout" type="submit">Log Out</button>
+      </form>
+    </div>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="/seller/events/new">+ Create Event</a>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h3>Your Events</h3>
+        <span class="count-pill"><%= events.length %> total</span>
+      </div>
+      <div class="grid">
+        <% events.forEach(event => { %>
+          <div class="card">
+            <div class="card-body">
+              <div class="card-top">
+                <div>
+                  <div class="card-title"><%= event.title %></div>
+                  <div class="muted small"><%= event.date || "TBD" %> • <%= event.venue || "Venue TBD" %></div>
+                  <% if (event.seller) { %>
+                    <div class="muted small">Seller: <%= event.seller %></div>
+                  <% } %>
+                </div>
+                <span class="badge ok"><%= (event.ticketTypes || []).length %> types</span>
+              </div>
+
+              <div class="ticket-grid">
+                <% (event.ticketTypes || []).forEach(t => { %>
+                  <div class="pitem">
+                    <div class="card-title"><%= t.name %></div>
+                    <div class="muted small">Price: SGD <%= t.priceSGD %> • Supply: <%= t.sold %>/<%= t.maxSupply %></div>
+                  </div>
+                <% }) %>
+                <% if (!(event.ticketTypes || []).length) { %>
+                  <div class="muted small">No ticket types yet.</div>
+                <% } %>
+              </div>
+
+              <form class="stack" method="POST" action="/seller/events/<%= event.id %>/types">
+                <div class="mini-title">Add Ticket Type</div>
+                <label class="auth-label">
+                  Name
+                  <input class="auth-input" type="text" name="name" required />
+                </label>
+                <label class="auth-label">
+                  Price (SGD)
+                  <input class="auth-input" type="number" step="0.01" name="priceSGD" required />
+                </label>
+                <label class="auth-label">
+                  Max Supply
+                  <input class="auth-input" type="number" name="maxSupply" min="1" required />
+                </label>
+                <button class="btn btn-dark" type="submit">Add Type</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

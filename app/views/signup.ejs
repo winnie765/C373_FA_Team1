@@ -10,15 +10,34 @@
 
     <section class="auth-right">
       <h2>Sign Up</h2>
-      <p class="muted">Join the platform to collect NFT tickets and rewards.</p>
+      <p class="muted">Join as a buyer or seller. Sellers must add company info.</p>
       <% if (error) { %>
         <div class="auth-error"><%= error %></div>
       <% } %>
 
       <form class="auth-form" action="/signup" method="post">
         <label class="auth-label">
+          Full Name
+          <input class="auth-input" type="text" name="name" placeholder="Your name" required/>
+        </label>
+        <label class="auth-label">
+          Phone Number
+          <input class="auth-input" type="tel" name="phone" placeholder="e.g. +1 555 123 4567" required/>
+        </label>
+        <label class="auth-label">
           Email
           <input class="auth-input" type="email" name="email" placeholder="Enter your email" required/>
+        </label>
+        <label class="auth-label">
+          Role
+          <div style="display:flex; gap:12px; align-items:center;">
+            <label><input type="radio" name="role" value="buyer" checked> Buyer</label>
+            <label><input type="radio" name="role" value="seller"> Seller</label>
+          </div>
+        </label>
+        <label class="auth-label" id="companyField" style="display:none;">
+          Company Name (sellers)
+          <input class="auth-input" type="text" name="company" placeholder="Company LLC"/>
         </label>
         <label class="auth-label">
           Password
@@ -38,3 +57,21 @@
     </section>
   </div>
 </main>
+
+<script>
+  const roleInputs = document.querySelectorAll('input[name="role"]');
+  const companyField = document.getElementById('companyField');
+  function toggleCompany(){
+    const role = [...roleInputs].find(r => r.checked)?.value;
+    if(role === 'seller'){
+      companyField.style.display = 'block';
+      companyField.querySelector('input').required = true;
+    } else {
+      companyField.style.display = 'none';
+      companyField.querySelector('input').required = false;
+      companyField.querySelector('input').value = '';
+    }
+  }
+  roleInputs.forEach(r => r.addEventListener('change', toggleCompany));
+  toggleCompany();
+</script>
