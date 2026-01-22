@@ -101,62 +101,6 @@ async function getActiveAddress(fallback) {
   }
 }
 
-async function syncWalletState(walletAddr) {
-  if (!walletAddr) return;
-  const wKey = walletTicketsKey(walletAddr);
-  const txKey = walletTxKey(walletAddr);
-  const cachedTickets = wKey ? getJSON(wKey, []) : getJSON(LS_KEYS.tickets, []);
-  const cachedTx = txKey ? getJSON(txKey, []) : getJSON(LS_KEYS.tx, []);
-  const cachedTok = Number(localStorage.getItem(LS_KEYS.tok) || "0");
-  await TicketNFT_API.connectWallet(walletAddr, {
-    tickets: cachedTickets,
-    transactions: cachedTx,
-    tokBalance: cachedTok
-  });
-}
-
-function handleAccountSwitch(accounts) {
-  const next = Array.isArray(accounts) && accounts.length ? accounts[0] : null;
-  if (!next) {
-    localStorage.removeItem(LS_KEYS.wallet);
-    localStorage.removeItem(LS_KEYS.tickets);
-    localStorage.removeItem(LS_KEYS.tx);
-    localStorage.removeItem(LS_KEYS.tok);
-    TicketNFT_UI.updateWalletUI(false);
-    return;
-  }
-  const lower = next.toLowerCase();
-  const current = localStorage.getItem(LS_KEYS.wallet);
-  if (current && current.toLowerCase() === lower) return;
-
-  localStorage.setItem(LS_KEYS.wallet, next);
-  const btn = document.getElementById("walletBtn");
-  if (btn) btn.textContent = shortAddr(next);
-  TicketNFT_UI.updateWalletUI(true);
-  syncWalletState(next).then(() => {
-    TicketNFT_UI.renderMyTickets?.();
-    TicketNFT_UI.renderTxHistory?.();
-    TicketNFT_UI.renderRewards?.();
-  });
-}
-
-function startAccountPoll() {
-  if (!window.ethereum) return;
-  let last = localStorage.getItem(LS_KEYS.wallet)?.toLowerCase() || null;
-  setInterval(async () => {
-    try {
-      const acct = await getActiveAddress(null);
-      const lower = acct ? acct.toLowerCase() : null;
-      if (lower !== last) {
-        last = lower;
-        handleAccountSwitch(acct ? [acct] : []);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, 2500);
-}
-
 window.TicketNFT_UI = {
   updateWalletUI(connected){
     const logoutForm = document.getElementById("logoutForm");
@@ -190,11 +134,19 @@ window.TicketNFT_UI = {
     if (btn && r?.address) btn.textContent = shortAddr(r.address);
     if (r?.address) {
       localStorage.setItem(LS_KEYS.wallet, r.address);
-      await syncWalletState(r.address);
+      const wKey = walletTicketsKey(r.address);
+      const txKey = walletTxKey(r.address);
+      const cachedTickets = wKey ? getJSON(wKey, []) : getJSON(LS_KEYS.tickets, []);
+      const cachedTx = txKey ? getJSON(txKey, []) : getJSON(LS_KEYS.tx, []);
+      const cachedTok = Number(localStorage.getItem(LS_KEYS.tok) || "0");
+      await TicketNFT_API.connectWallet(r.address, {
+        tickets: cachedTickets,
+        transactions: cachedTx,
+        tokBalance: cachedTok
+      });
       this.updateWalletUI(true);
       await this.renderMyTickets?.();
       await this.renderTxHistory?.();
-      await this.renderRewards?.();
     }
     return r;
   },
@@ -213,7 +165,7 @@ window.TicketNFT_UI = {
     }
     const walletAddr = await getActiveAddress(w.address);
     localStorage.setItem(LS_KEYS.wallet, walletAddr);
-    await syncWalletState(walletAddr);
+    await TicketNFT_API.connectWallet(walletAddr);
     setProgress("p-wallet", `Wallet: Connected (${shortAddr(walletAddr)})`, true);
 
     // 2) Payment + 3) Mint
@@ -610,7 +562,16 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (btn && cached) btn.textContent = shortAddr(cached);
   TicketNFT_UI.updateWalletUI(!!cached);
   if (cached) {
-    await syncWalletState(cached);
+    const wKey = walletTicketsKey(cached);
+    const txKey = walletTxKey(cached);
+    const cachedTickets = wKey ? getJSON(wKey, []) : getJSON(LS_KEYS.tickets, []);
+    const cachedTx = txKey ? getJSON(txKey, []) : getJSON(LS_KEYS.tx, []);
+    const cachedTok = Number(localStorage.getItem(LS_KEYS.tok) || "0");
+    await TicketNFT_API.connectWallet(cached, {
+      tickets: cachedTickets,
+      transactions: cachedTx,
+      tokBalance: cachedTok
+    });
   }
 
   btn?.addEventListener("click", async () => {
@@ -622,13 +583,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem(LS_KEYS.wallet);
     TicketNFT_UI.updateWalletUI(false);
   });
-
-  if (window.ethereum?.on) {
-    window.ethereum.on("accountsChanged", handleAccountSwitch);
-    window.ethereum.on("chainChanged", () => window.location.reload());
-  }
-  startAccountPoll();
 });
+
 
 
 
