@@ -216,9 +216,269 @@
         "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
         "status": "Valid",
         "createdAt": "2026-01-22T19:52:25.719Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 494283,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T07:36:06.435Z"
+      },
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 142396,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T07:36:13.546Z"
+      },
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T07:39:57.506Z"
+      },
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 154200495,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T07:43:20.492Z"
+      },
+      {
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 154373097,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T07:46:13.095Z"
+      },
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 155392804,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:03:12.802Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 155910756,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:11:50.753Z"
+      },
+      {
+        "eventId": 5,
+        "typeId": 0,
+        "tokenId": 156063715,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:14:23.711Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 156080309,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:14:40.307Z"
+      },
+      {
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 4,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:26:39.293Z"
+      },
+      {
+        "eventId": 2,
+        "typeId": 1,
+        "tokenId": 156846518,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:27:26.515Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 156883262,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:28:03.259Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 7,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:28:19.108Z"
       }
     ],
     "transactions": [
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 7,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.08",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:28:19.108Z",
+        "hash": "0x70d20bb6f1bf2b92187cdcd81c9ee54b4bb6b7d00ef38ab0f16efe283360002d"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 156883262,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.08",
+        "discountEth": 0.0001,
+        "tokSpent": 100,
+        "createdAt": "2026-01-23T08:28:03.259Z",
+        "hash": "0x58d1478391b859c5f7be32d1ee966e5f23f52c15b162048a78c4c19a98c1cb55"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 2,
+        "typeId": 1,
+        "tokenId": 156846518,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.002",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:27:26.515Z",
+        "hash": "0x8dfac65c708639ca1501a1bf8ced4b26aa32c3a329318b85c9f852f9c8acdfc6"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 4,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:26:39.293Z",
+        "hash": "0x157d47fc292f4a41df008511bec2fd2233ed0a87889460e92eb972b069c1d738"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 156080309,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.08",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:14:40.307Z",
+        "hash": "0x1b0c8752e9034f5449b89284b4c739f41387959a20b96e6e6ff2030613e7a52d"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 5,
+        "typeId": 0,
+        "tokenId": 156063715,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.1",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:14:23.711Z",
+        "hash": "0x32c2e180a93cfd33c7399a1a9ae731fe5c477b100a5aed2287bfff21748805ab"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 155910756,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.08",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:11:50.753Z",
+        "hash": "0x9084dab271c8075deb6810977700527fbeb835aed605e54de38a1a8a6d16ee31"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 155392804,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:03:12.802Z",
+        "hash": "0xbb9e57993965a9e5d749041cf06ca53a8a57b0943771f39925f0df812b89fc99"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 154373097,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T07:46:13.095Z",
+        "hash": "0xb6fbc439b90539677036d8d708be3a2d9f26cd2a015cd4a0b9c3deea0a4d1f02"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 154200495,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T07:43:20.492Z",
+        "hash": "0xfaf12e8630e8b400f0b35b1be5864260e9a41f8c2900cd317b3373fd10e9dd43"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.001",
+        "discountEth": 0.0001,
+        "tokSpent": 100,
+        "createdAt": "2026-01-23T07:39:57.506Z",
+        "hash": "0xdbce72f714c3483be407fbc77f2b2b9ca6988b5e102492687856bab620b04ffc"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 142396,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "120",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T07:36:13.546Z",
+        "hash": null
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 494283,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "80",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T07:36:06.435Z",
+        "hash": null
+      },
       {
         "type": "BUY_TICKET",
         "eventId": 4,
@@ -348,7 +608,7 @@
         "hash": "0x4e2f77bf22072ed3a9814d8cb3be5f3ae499f29addf353797b9f2357d2c20436"
       }
     ],
-    "tok": 80
+    "tok": 20
   },
   "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a": {
     "tickets": [
@@ -367,9 +627,29 @@
         "wallet": "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a",
         "status": "Valid",
         "createdAt": "2026-01-22T19:48:02.625Z"
+      },
+      {
+        "eventId": 5,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a",
+        "status": "Valid",
+        "createdAt": "2026-01-23T08:13:44.858Z"
       }
     ],
     "transactions": [
+      {
+        "type": "BUY_TICKET",
+        "eventId": 5,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a",
+        "valueEth": "0.1",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-23T08:13:44.858Z",
+        "hash": "0x7b2f56a3adec8fdb6444cdcf430b1bc8785afc53298fc14d118f824c8e2ca0bf"
+      },
       {
         "type": "BUY_TICKET",
         "eventId": 5,
@@ -395,6 +675,6 @@
         "hash": null
       }
     ],
-    "tok": 70
+    "tok": 20
   }
 }

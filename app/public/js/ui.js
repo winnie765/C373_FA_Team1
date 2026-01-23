@@ -226,12 +226,10 @@ window.TicketNFT_UI = {
     const hasDisplayPrice = Number.isFinite(numericPrice) && numericPrice > 0;
     if (hasDisplayPrice) {
       ethValue = String(numericPrice); // treat displayed price as ETH amount for prototype
-      simulateOnly = true;            // avoid on-chain price override when using UI price
     }
     let tokBalance = 0;
     let discountEthDisplay = "0";
     let discountLabel = "";
-    let simulateOnly = false;
     try {
       const rewards = await TicketNFT_API.getRewards();
       tokBalance = typeof rewards?.tokBalance === "number"
@@ -246,67 +244,27 @@ window.TicketNFT_UI = {
     let tokSpent = 0;
     let discountEth = 0;
     try{
-      // If we are simulating (off-chain seller event), skip on-chain checks entirely
-      if (simulateOnly) {
-        setProgress("p-pay", `Payment: Simulated (${ethValue} ETH)`, true);
-        setProgress("p-mint", "Mint: Minting NFT Ticket", false);
-        const tokenId = Math.floor(Math.random()*900000+100000);
-        setProgress("p-mint", `Mint: Completed (Token #${tokenId})`, true);
-        const tokEarned = TicketNFT_Config.tokPerPurchase || 10;
-        const createdAt = new Date().toISOString();
-        const stored = await TicketNFT_API.recordPurchase({
-          wallet: walletAddr,
-          eventId,
-          typeId,
-          tokenId,
-          valueEth: ethValue,
-          discountEth: 0,
-          tokSpent: 0,
-          hash: null,
-          createdAt,
-          tokEarned
-        });
-        if (stored?.tickets) {
-          setJSON(LS_KEYS.tickets, stored.tickets);
-          const wKey = walletTicketsKey(walletAddr);
-          if (wKey) setJSON(wKey, stored.tickets);
-        }
-        if (stored?.transactions) {
-          setJSON(LS_KEYS.tx, stored.transactions);
-          const txKey = walletTxKey(walletAddr);
-          if (txKey) setJSON(txKey, stored.transactions);
-        }
-        if (typeof stored?.tokBalance === "number") {
-          localStorage.setItem(LS_KEYS.tok, String(stored.tokBalance));
-        }
-        setProgress("p-reward", `Rewards: +${tokEarned} TOK`, true);
-        window.location.href = "/tickets/success";
-        return;
-      }
-
       const [eventInfo, typeInfo] = await Promise.all([
         TicketNFT_TicketContract.getEventInfo(chainEventId),
         TicketNFT_TicketContract.getTicketType(chainEventId, typeId)
       ]);
 
       if (!eventInfo?.active) {
-        // If the event doesn't exist on-chain (off-chain added seller event), allow prototype simulation
-        simulateOnly = true;
+        alert("This event is not active on the connected network. Please deploy/activate it first.");
+        return;
       }
       const hasSupply =
         typeInfo?.maxSupply !== null &&
         typeof typeInfo?.maxSupply !== "undefined" &&
         Number(typeInfo.maxSupply) > 0;
-      if (!simulateOnly && hasSupply && typeInfo?.sold !== null && Number(typeInfo.sold) >= Number(typeInfo.maxSupply)) {
+      if (hasSupply && typeInfo?.sold !== null && Number(typeInfo.sold) >= Number(typeInfo.maxSupply)) {
         alert("This ticket type is sold out.");
         return;
       }
 
-      if (!simulateOnly) {
-        const priceWei = await TicketNFT_TicketContract.getTicketPrice(chainEventId, typeId);
-        if (priceWei) {
-          ethValue = ethers.formatEther(priceWei);
-        }
+      const priceWei = await TicketNFT_TicketContract.getTicketPrice(chainEventId, typeId);
+      if (priceWei) {
+        ethValue = ethers.formatEther(priceWei);
       }
       // Apply TOK discount off-chain (prototype): every 100 TOK = 0.0001 ETH off, capped to price
       const priceNum = Number(ethValue);
@@ -329,17 +287,9 @@ window.TicketNFT_UI = {
         false
       );
 
-      let receipt = null;
-      let paidEth = ethValue;
-      // If simulation mode or discount applied, avoid on-chain call (prototype path)
-      if (discountEth > 0 || simulateOnly) {
-        paidEth = ethValue;
-        setProgress("p-pay", `Payment: Simulated${discountEth > 0 ? ` with discount (${discountEthDisplay} ETH off)` : ""}`, true);
-      } else {
-        receipt = await TicketNFT_TicketContract.buyTicket(chainEventId, typeId, ethValue);
-        paidEth = receipt?.priceEth || ethValue;
-        setProgress("p-pay", "Payment: Confirmed", true);
-      }
+      const receipt = await TicketNFT_TicketContract.buyTicket(chainEventId, typeId, ethValue);
+      const paidEth = receipt?.priceEth || ethValue;
+      setProgress("p-pay", "Payment: Confirmed", true);
 
       setProgress("p-mint", "Mint: Minting NFT Ticket", false);
       const tokenId = receipt?.tokenId ?? Math.floor(Math.random()*900000+100000);
