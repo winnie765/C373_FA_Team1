@@ -8,20 +8,24 @@
     "venue": "The Star Theatre, SG",
     "image": "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80",
     "description": "A special acoustic set featuring fan favorites and new material.",
+    "seller": "0x99f8C4e03181022125CAB1A9929Ab44027AD276a",
+    "chainEventId": 0,
     "ticketTypes": [
       {
         "typeId": 0,
         "name": "General Admission",
-        "priceSGD": 120,
+        "priceSGD": 0.001,
         "maxSupply": 500,
-        "sold": 128
+        "sold": 0,
+        "chainTypeId": 0
       },
       {
         "typeId": 1,
         "name": "VIP",
-        "priceSGD": 250,
+        "priceSGD": 0.002,
         "maxSupply": 100,
-        "sold": 93
+        "sold": 0,
+        "chainTypeId": 1
       }
     ]
   },
@@ -34,20 +38,24 @@
     "venue": "Singapore Indoor Stadium",
     "image": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80",
     "description": "One-night festival with EDM headliners and immersive visuals.",
+    "seller": "0x99f8C4e03181022125CAB1A9929Ab44027AD276a",
+    "chainEventId": 1,
     "ticketTypes": [
       {
         "typeId": 0,
         "name": "Standard",
-        "priceSGD": 98,
+        "priceSGD": 0.001,
         "maxSupply": 800,
-        "sold": 800
+        "sold": 0,
+        "chainTypeId": 0
       },
       {
         "typeId": 1,
         "name": "Premium",
-        "priceSGD": 168,
+        "priceSGD": 0.002,
         "maxSupply": 200,
-        "sold": 144
+        "sold": 0,
+        "chainTypeId": 1
       }
     ]
   },
@@ -60,61 +68,96 @@
     "venue": "RP Lawn",
     "image": "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&w=1200&q=80",
     "description": "School carnival with live performances, food booths, and games.",
+    "seller": "0x99f8C4e03181022125CAB1A9929Ab44027AD276a",
+    "chainEventId": 2,
     "ticketTypes": [
       {
         "typeId": 0,
         "name": "Entry Pass",
-        "priceSGD": 10,
+        "priceSGD": 0.001,
         "maxSupply": 300,
-        "sold": 57
+        "sold": 0,
+        "chainTypeId": 0
       },
       {
         "typeId": 1,
         "name": "Fast Lane",
-        "priceSGD": 25,
+        "priceSGD": 0.0015,
         "maxSupply": 50,
-        "sold": 22
+        "sold": 0,
+        "chainTypeId": 1
       }
     ]
   },
   {
     "id": 4,
-    "title": "KPOP NIght",
+    "title": "123123123",
     "artist": "TBD",
-    "date": "2026-01-31",
-    "time": "8 PM",
-    "venue": "Stadium",
-    "image": "",
-    "description": "",
-    "seller": "0x6e8Ab59e5e3CD43a78b1B5449aA522952476F36A",
+    "date": "2026-01-30",
+    "time": "12：00",
+    "venue": "21",
+    "image": "https://anyrouter.top/console/token",
+    "description": "12312",
+    "seller": "0x99f8c4e03181022125cab1a9929ab44027ad276a",
     "ticketTypes": [
       {
         "typeId": 0,
-        "name": "General",
-        "priceSGD": 80,
-        "maxSupply": 80,
+        "name": "vip",
+        "priceSGD": 0.01,
+        "maxSupply": 100,
         "sold": 0
       }
     ]
   },
   {
-    "id": 5,
+    "id": 6,
     "title": "ABC",
     "artist": "TBD",
-    "date": "2026-01-31",
+    "date": "2026-01-27",
     "time": "8 PM",
     "venue": "Stadium",
     "image": "",
-    "description": "",
-    "seller": "0x6e8Ab59e5e3CD43a78b1B5449aA522952476F36A",
+    "description": "123",
+    "seller": "0x8ba5e8a9902a990af80175dcbd56e38fc9584da9",
+    "chainEventId": 5,
     "ticketTypes": [
       {
         "typeId": 0,
-        "name": "Premium",
-        "priceSGD": 100,
+        "name": "VIP",
+        "priceSGD": 1,
         "maxSupply": 100,
-        "sold": 0
+        "sold": 0,
+        "chainTypeId": 0
+      },
+      {
+        "typeId": 0,
+        "name": "Normal",
+        "priceSGD": 2,
+        "maxSupply": 100,
+        "sold": 0,
+        "chainTypeId": 0
+      },
+      {
+        "typeId": 1,
+        "name": "normal",
+        "priceSGD": 2,
+        "maxSupply": 100,
+        "sold": 0,
+        "chainTypeId": 1
       }
     ]
+  },
+  {
+    "id": 6,
+    "title": "CBA",
+    "artist": "TBD",
+    "date": "2026-01-27",
+    "time": "8 PM",
+    "venue": "Stadium",
+    "image": "",
+    "description": "123",
+    "seller": "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a",
+    "chainEventId": 5,
+    "ticketTypes": []
   }
 ]

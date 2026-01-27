@@ -64,51 +64,107 @@ export function newEventForm(req, res) {
 }
 
 export function createEvent(req, res) {
-  const { title, sellerWallet, date, time, venue, image, description } = req.body;
+  // Support both form data and JSON
+  const isJson = req.headers['content-type']?.includes('application/json');
+  const body = req.body;
+
+  const title = body.title;
+  const sellerWallet = body.sellerWallet;
+  const date = body.date || "";
+  const time = body.time || "";
+  const venue = body.venue || "";
+  const image = body.image || "";
+  const description = body.description || "";
+  const chainEventId = body.chainEventId; // From blockchain
+
   if (!title) {
+    if (isJson) {
+      return res.status(400).json({ error: "Title is required." });
+    }
     return res.status(400).render("seller-new", {
       title: "Create Event",
       error: "Title is required."
     });
   }
+
   const events = loadEvents();
-  const nextId = events.reduce((max, e) => Math.max(max, Number(e.id) || 0), 0) + 1;
+
+  // If chainEventId is provided, use it; otherwise generate next ID
+  let nextId;
+  if (chainEventId !== null && chainEventId !== undefined) {
+    // Chain event ID is 0-indexed, our JSON is 1-indexed
+    nextId = Number(chainEventId) + 1;
+  } else {
+    nextId = events.reduce((max, e) => Math.max(max, Number(e.id) || 0), 0) + 1;
+  }
+
   const event = {
     id: nextId,
     title,
     artist: "TBD",
-    date: date || "",
-    time: time || "",
-    venue: venue || "",
-    image: image || "",
-    description: description || "",
+    date,
+    time,
+    venue,
+    image,
+    description,
     seller: sellerWallet || "",
+    chainEventId: chainEventId !== null ? Number(chainEventId) : null,
     ticketTypes: []
   };
+
   events.push(event);
   saveEvents(events);
+
+  if (isJson) {
+    return res.json({ success: true, event });
+  }
   return res.redirect("/seller");
 }
 
 export function addTicketType(req, res) {
   const { id } = req.params;
-  const { name, priceSGD, maxSupply } = req.body;
+  const isJson = req.headers['content-type']?.includes('application/json');
+  const { name, priceSGD, maxSupply, chainTypeId } = req.body;
+
   const events = loadEvents();
   const event = events.find(e => Number(e.id) === Number(id));
+
   if (!event) {
+    if (isJson) {
+      return res.status(404).json({ error: "Event not found" });
+    }
     return res.status(404).send("Event not found");
   }
+
   if (!name || !priceSGD || !maxSupply) {
+    if (isJson) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
     return res.status(400).send("All fields are required.");
   }
-  const nextTypeId = event.ticketTypes.reduce((m, t) => Math.max(m, Number(t.typeId) || 0), -1) + 1;
-  event.ticketTypes.push({
+
+  // Use chainTypeId if provided, otherwise generate locally
+  let nextTypeId;
+  if (chainTypeId !== null && chainTypeId !== undefined) {
+    nextTypeId = Number(chainTypeId);
+  } else {
+    nextTypeId = event.ticketTypes.reduce((m, t) => Math.max(m, Number(t.typeId) || 0), -1) + 1;
+  }
+
+  const ticketType = {
     typeId: nextTypeId,
     name,
     priceSGD: Number(priceSGD),
     maxSupply: Number(maxSupply),
-    sold: 0
-  });
+    sold: 0,
+    chainTypeId: chainTypeId !== null && chainTypeId !== undefined ? Number(chainTypeId) : null
+  };
+
+  event.ticketTypes.push(ticketType);
   saveEvents(events);
+
+  if (isJson) {
+    return res.json({ success: true, ticketType });
+  }
   return res.redirect("/seller");
 }

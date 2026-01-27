@@ -18,24 +18,166 @@
         <span class="pill">$<%= ticketType.priceSGD %></span>
       </div>
 
+      <!-- Payment Mode Selection -->
+      <div class="payment-mode-selector">
+        <label class="payment-mode-option">
+          <input type="radio" name="paymentMode" value="escrow" checked>
+          <div class="payment-mode-card">
+            <div class="payment-mode-header">
+              <span class="payment-mode-icon">&#128274;</span>
+              <span class="payment-mode-title">Secure Escrow Payment</span>
+              <span class="payment-mode-badge recommended">Recommended</span>
+            </div>
+            <p class="payment-mode-desc">Funds held securely until you confirm receipt. Protected by smart contract.</p>
+            <ul class="payment-mode-features">
+              <li>Funds held in escrow until delivery confirmed</li>
+              <li>Dispute resolution available</li>
+              <li>Automatic refund if seller doesn't deliver</li>
+            </ul>
+          </div>
+        </label>
+        <label class="payment-mode-option">
+          <input type="radio" name="paymentMode" value="direct">
+          <div class="payment-mode-card">
+            <div class="payment-mode-header">
+              <span class="payment-mode-icon">&#9889;</span>
+              <span class="payment-mode-title">Direct Payment</span>
+            </div>
+            <p class="payment-mode-desc">Instant payment to seller. No escrow protection.</p>
+          </div>
+        </label>
+      </div>
+
       <div class="progress">
         <div class="pitem" id="p-wallet">Wallet: Not connected</div>
         <div class="pitem" id="p-pay">Payment: Pending</div>
         <div class="pitem" id="p-mint">Mint: Pending</div>
         <div class="pitem" id="p-reward">Rewards: Pending</div>
+        <div class="pitem" id="p-escrow" style="display:none;">Escrow: Pending</div>
       </div>
 
       <div class="actions">
         <button class="btn btn-ghost" type="button" onclick="TicketNFT_UI.connectWallet()">Connect MetaMask</button>
-        <button class="btn btn-primary" type="button"
-          onclick="TicketNFT_UI.buyTicketFlow(<%= event.id %>, <%= ticketType.typeId %>, <%= ticketType.priceSGD %>)">
+        <button class="btn btn-primary" type="button" id="purchaseBtn">
           Confirm & Mint
         </button>
       </div>
 
-      <div class="muted small">Prototype note: This works with Hardhat local chain (recommended) or will simulate if contract not deployed.</div>
+      <div class="muted small">Prototype note: Escrow mode holds funds securely until you confirm receipt of the ticket.</div>
     </div>
   </section>
 </main>
+
+<style>
+  .payment-mode-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .payment-mode-option {
+    cursor: pointer;
+  }
+
+  .payment-mode-option input {
+    display: none;
+  }
+
+  .payment-mode-card {
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .payment-mode-option input:checked + .payment-mode-card {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  .payment-mode-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .payment-mode-icon {
+    font-size: 20px;
+  }
+
+  .payment-mode-title {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .payment-mode-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #333;
+    color: #888;
+  }
+
+  .payment-mode-badge.recommended {
+    background: #10b981;
+    color: #fff;
+  }
+
+  .payment-mode-desc {
+    font-size: 13px;
+    color: #888;
+    margin: 0 0 8px 0;
+  }
+
+  .payment-mode-features {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  .payment-mode-features li {
+    margin-bottom: 4px;
+  }
+
+  .payment-mode-option input:checked + .payment-mode-card .payment-mode-features {
+    color: #aaa;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const purchaseBtn = document.getElementById('purchaseBtn');
+    const escrowProgress = document.getElementById('p-escrow');
+
+    function updateUI() {
+      const mode = document.querySelector('input[name="paymentMode"]:checked').value;
+      escrowProgress.style.display = mode === 'escrow' ? 'block' : 'none';
+    }
+
+    document.querySelectorAll('input[name="paymentMode"]').forEach(input => {
+      input.addEventListener('change', updateUI);
+    });
+
+    purchaseBtn.addEventListener('click', function() {
+      const mode = document.querySelector('input[name="paymentMode"]:checked').value;
+      const eventId = <%= event.id %>;
+      const typeId = <%= ticketType.typeId %>;
+      const price = <%= ticketType.priceSGD %>;
+      const sellerWallet = "<%= event.seller || '' %>";
+
+      if (mode === 'escrow') {
+        TicketNFT_UI.buyTicketWithEscrow(eventId, typeId, price, sellerWallet);
+      } else {
+        TicketNFT_UI.buyTicketFlow(eventId, typeId, price);
+      }
+    });
+
+    updateUI();
+  });
+</script>
 
 <%- include('partials/footer') %>

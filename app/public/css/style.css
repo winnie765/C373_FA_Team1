@@ -195,6 +195,7 @@ h1,h2,h3,.brand span,.hero-badge,.event-title,.event-card-top{font-family:"Outfi
 .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--border)}
 .badge.ok{background:rgba(40,184,131,.1);color:var(--ok);border-color:rgba(40,184,131,.28)}
 .badge.bad{background:rgba(255,91,98,.1);color:var(--bad);border-color:rgba(255,91,98,.28)}
+.badge.pending{background:rgba(245,158,11,.1);color:#f59e0b;border-color:rgba(245,158,11,.28)}
 
 .page-head{padding:10px 0 2px 0}
 .page-head h1{margin:0}

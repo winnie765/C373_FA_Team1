@@ -1,0 +1,668 @@
+<%- include('partials/header', { title }) %>
+<%- include('partials/navbar') %>
+
+<main class="container">
+  <div class="page-head">
+    <h1>My Orders</h1>
+    <p class="muted">Track your ticket purchases and escrow status</p>
+  </div>
+
+  <!-- Order Status Filter -->
+  <div class="order-filters">
+    <button class="filter-btn active" data-filter="all">All Orders</button>
+    <button class="filter-btn" data-filter="0">Pending</button>
+    <button class="filter-btn" data-filter="1">Confirmed</button>
+    <button class="filter-btn" data-filter="2">Disputed</button>
+    <button class="filter-btn" data-filter="3">Refunded</button>
+  </div>
+
+  <!-- Loading State -->
+  <div id="ordersLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading orders...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div id="ordersEmpty" class="empty" style="display:none;">
+    <div class="muted">No orders yet.</div>
+    <a class="btn btn-primary" href="/events">Browse Events</a>
+  </div>
+
+  <!-- Orders List -->
+  <div id="ordersList" class="orders-list" style="display:none;"></div>
+
+  <!-- Dispute Modal -->
+  <div id="disputeModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Raise Dispute</h2>
+        <button class="modal-close" onclick="TicketNFT_Escrow.closeDisputeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Please describe the issue with your order:</p>
+        <textarea id="disputeReason" placeholder="Enter the reason for your dispute..." rows="4"></textarea>
+        <input type="hidden" id="disputeOrderId" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="TicketNFT_Escrow.closeDisputeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="TicketNFT_Escrow.submitDispute()">Submit Dispute</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .order-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 8px 16px;
+    border: 1px solid #333;
+    background: transparent;
+    color: #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover {
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .filter-btn.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: #000;
+  }
+
+  .loading-state {
+    text-align: center;
+    padding: 60px 20px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #333;
+    border-top-color: #f59e0b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .order-card {
+    background: rgba(30, 30, 40, 0.8);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .order-card:hover {
+    border-color: #555;
+  }
+
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .order-id {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .order-event {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin: 4px 0;
+  }
+
+  .order-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .status-pending { background: #f59e0b20; color: #f59e0b; }
+  .status-confirmed { background: #10b98120; color: #10b981; }
+  .status-disputed { background: #ef444420; color: #ef4444; }
+  .status-refunded { background: #6b728020; color: #9ca3af; }
+  .status-released { background: #10b98120; color: #10b981; }
+  .status-cancelled { background: #6b728020; color: #9ca3af; }
+
+  .order-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-label {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .detail-value {
+    font-size: 14px;
+    color: #fff;
+  }
+
+  .detail-value.highlight {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  .order-timeline {
+    margin-bottom: 16px;
+  }
+
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+
+  .timeline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+  }
+
+  .order-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-confirm {
+    background: #10b981;
+    color: #fff;
+  }
+
+  .btn-confirm:hover {
+    background: #059669;
+  }
+
+  .btn-dispute {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+  }
+
+  .btn-dispute:hover {
+    background: #ef444420;
+  }
+
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid #6b7280;
+    color: #9ca3af;
+  }
+
+  .btn-cancel:hover {
+    background: #6b728020;
+  }
+
+  .auto-release-timer {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+  }
+
+  .auto-release-timer .time {
+    color: #f59e0b;
+    font-weight: 600;
+  }
+
+  /* Modal Styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: #1e1e28;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #333;
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .modal-close:hover {
+    color: #fff;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .modal-body textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #0d0d12;
+    color: #fff;
+    font-size: 14px;
+    resize: vertical;
+    margin-top: 12px;
+  }
+
+  .modal-body textarea:focus {
+    outline: none;
+    border-color: #f59e0b;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #333;
+  }
+
+  /* Dispute/Resolution info */
+  .dispute-info {
+    background: #ef444420;
+    border: 1px solid #ef444440;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .dispute-info .label {
+    font-size: 12px;
+    color: #ef4444;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .resolution-info {
+    background: #10b98120;
+    border: 1px solid #10b98140;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .resolution-info .label {
+    font-size: 12px;
+    color: #10b981;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+</style>
+
+<script>
+  window.TicketNFT_Escrow = {
+    orders: [],
+    currentFilter: 'all',
+
+    async init() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => this.setFilter(btn.dataset.filter));
+      });
+      await this.loadOrders();
+    },
+
+    setFilter(filter) {
+      this.currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      this.renderOrders();
+    },
+
+    async loadOrders() {
+      const loading = document.getElementById('ordersLoading');
+      const empty = document.getElementById('ordersEmpty');
+      const list = document.getElementById('ordersList');
+
+      loading.style.display = 'block';
+      empty.style.display = 'none';
+      list.style.display = 'none';
+
+      try {
+        const wallet = localStorage.getItem('ticketnft_wallet');
+        console.log('[Orders] Wallet:', wallet);
+
+        if (!wallet) {
+          loading.style.display = 'none';
+          empty.innerHTML = '<div class="muted">Please connect your wallet first.</div><a class="btn btn-primary" href="/events">Browse Events</a>';
+          empty.style.display = 'block';
+          return;
+        }
+
+        // Load from localStorage only (skip blockchain to avoid timeout)
+        this.orders = this.getSimulatedOrders(wallet);
+        console.log('[Orders] Local orders:', this.orders);
+
+        loading.style.display = 'none';
+        if (this.orders.length === 0) {
+          empty.innerHTML = `
+            <div class="muted">No orders yet.</div>
+            <div class="muted" style="font-size:12px;margin-top:10px;">Wallet: ${wallet.slice(0,10)}...</div>
+            <a class="btn btn-primary" href="/events">Browse Events</a>
+          `;
+          empty.style.display = 'block';
+        } else {
+          list.style.display = 'flex';
+          this.renderOrders();
+        }
+      } catch (err) {
+        console.error('Error loading orders:', err);
+        loading.style.display = 'none';
+        empty.innerHTML = '<div class="muted">Error: ' + err.message + '</div>';
+        empty.style.display = 'block';
+      }
+    },
+
+    getSimulatedOrders(wallet) {
+      const key = `ticketnft_orders_${wallet.toLowerCase()}`;
+      const data = localStorage.getItem(key);
+      console.log('[Orders] Key:', key, 'Data:', data);
+      return data ? JSON.parse(data) : [];
+    },
+
+    saveSimulatedOrder(order) {
+      const wallet = localStorage.getItem('ticketnft_wallet');
+      const key = `ticketnft_orders_${wallet.toLowerCase()}`;
+      const orders = this.getSimulatedOrders(wallet);
+      orders.push(order);
+      localStorage.setItem(key, JSON.stringify(orders));
+    },
+
+    renderOrders() {
+      const list = document.getElementById('ordersList');
+      const filtered = this.currentFilter === 'all'
+        ? this.orders
+        : this.orders.filter(o => o.status === parseInt(this.currentFilter));
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty"><div class="muted">No orders match this filter.</div></div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(order => this.renderOrderCard(order)).join('');
+    },
+
+    renderOrderCard(order) {
+      const statusClasses = ['pending', 'confirmed', 'disputed', 'refunded', 'released', 'cancelled'];
+      const statusClass = statusClasses[order.status] || 'pending';
+      const statusText = order.statusText || ['Pending', 'Confirmed', 'Disputed', 'Refunded', 'Released', 'Cancelled'][order.status];
+
+      const createdDate = order.createdAtDate ? order.createdAtDate.toLocaleString() : new Date(order.createdAt * 1000).toLocaleString();
+      const deadlineDate = order.deliveryDeadlineDate ? order.deliveryDeadlineDate.toLocaleString() : new Date(order.deliveryDeadline * 1000).toLocaleString();
+
+      let disputeHtml = '';
+      if (order.disputeReason) {
+        disputeHtml = `
+          <div class="dispute-info">
+            <div class="label">Dispute Reason:</div>
+            <div>${order.disputeReason}</div>
+          </div>
+        `;
+      }
+
+      let resolutionHtml = '';
+      if (order.resolution) {
+        resolutionHtml = `
+          <div class="resolution-info">
+            <div class="label">Resolution:</div>
+            <div>${order.resolution}</div>
+          </div>
+        `;
+      }
+
+      let actionsHtml = '';
+      if (order.status === 0) { // Pending
+        actionsHtml = `
+          <div class="order-actions">
+            <button class="btn btn-confirm" onclick="TicketNFT_Escrow.confirmDelivery(${order.orderId})">
+              Confirm Receipt
+            </button>
+            <button class="btn btn-dispute" onclick="TicketNFT_Escrow.openDisputeModal(${order.orderId})">
+              Raise Dispute
+            </button>
+            <button class="btn btn-cancel" onclick="TicketNFT_Escrow.cancelOrder(${order.orderId})">
+              Cancel Order
+            </button>
+          </div>
+          <div class="auto-release-timer">
+            Auto-release to seller in: <span class="time" id="timer-${order.orderId}">Calculating...</span>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="order-card" data-order-id="${order.orderId}" data-status="${order.status}">
+          <div class="order-header">
+            <div>
+              <div class="order-id">Order #${order.orderId}</div>
+              <div class="order-event">Event #${order.eventId} - Ticket Type #${order.ticketTypeId}</div>
+            </div>
+            <div class="order-status status-${statusClass}">${statusText}</div>
+          </div>
+
+          ${disputeHtml}
+          ${resolutionHtml}
+
+          <div class="order-details">
+            <div class="detail-item">
+              <span class="detail-label">Amount</span>
+              <span class="detail-value highlight">${order.amount} ETH</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Platform Fee</span>
+              <span class="detail-value">${order.platformFee} ETH</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Seller Receives</span>
+              <span class="detail-value">${order.sellerAmount} ETH</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">NFT Token ID</span>
+              <span class="detail-value">${order.tokenId || 'Pending'}</span>
+            </div>
+          </div>
+
+          <div class="order-timeline">
+            <div class="timeline-item">
+              <span class="timeline-dot"></span>
+              Created: ${createdDate}
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-dot" style="background: ${order.status === 0 ? '#888' : '#10b981'}"></span>
+              Delivery Deadline: ${deadlineDate}
+            </div>
+          </div>
+
+          ${actionsHtml}
+        </div>
+      `;
+    },
+
+    async confirmDelivery(orderId) {
+      if (!confirm('Are you sure you want to confirm receipt? This will release the funds to the seller.')) {
+        return;
+      }
+
+      try {
+        let txHash = null;
+
+        // Try blockchain first
+        if (typeof TicketNFT_EscrowContract !== 'undefined') {
+          try {
+            const deployed = await TicketNFT_EscrowContract.isDeployed();
+            if (deployed) {
+              const result = await TicketNFT_EscrowContract.confirmDelivery(orderId);
+              txHash = result.hash;
+            }
+          } catch (chainErr) {
+            console.warn('Blockchain confirm failed:', chainErr.message);
+          }
+        }
+
+        // Always update local storage
+        this.updateSimulatedOrderStatus(orderId, 1); // 1 = Confirmed
+
+        if (txHash) {
+          alert('Delivery confirmed! Funds released to seller.\n\nTransaction: ' + txHash.slice(0, 20) + '...');
+        } else {
+          alert('Delivery confirmed! Order status updated.');
+        }
+
+        // Refresh the orders list
+        await this.loadOrders();
+      } catch (err) {
+        console.error('Error confirming delivery:', err);
+        alert('Error: ' + (err.reason || err.message));
+      }
+    },
+
+    openDisputeModal(orderId) {
+      document.getElementById('disputeOrderId').value = orderId;
+      document.getElementById('disputeReason').value = '';
+      document.getElementById('disputeModal').style.display = 'flex';
+    },
+
+    closeDisputeModal() {
+      document.getElementById('disputeModal').style.display = 'none';
+    },
+
+    async submitDispute() {
+      const orderId = document.getElementById('disputeOrderId').value;
+      const reason = document.getElementById('disputeReason').value.trim();
+
+      if (!reason) {
+        alert('Please enter a reason for your dispute.');
+        return;
+      }
+
+      try {
+        if (typeof TicketNFT_EscrowContract !== 'undefined' && await TicketNFT_EscrowContract.isDeployed()) {
+          const result = await TicketNFT_EscrowContract.raiseDispute(orderId, reason);
+          alert('Dispute submitted! Transaction: ' + result.hash);
+        } else {
+          // Simulate
+          this.updateSimulatedOrderStatus(orderId, 2, reason);
+          alert('Dispute submitted! (Simulated)');
+        }
+        this.closeDisputeModal();
+        await this.loadOrders();
+      } catch (err) {
+        console.error('Error raising dispute:', err);
+        alert('Error: ' + (err.reason || err.message));
+      }
+    },
+
+    async cancelOrder(orderId) {
+      if (!confirm('Are you sure you want to cancel this order? You can only cancel within 1 hour of purchase.')) {
+        return;
+      }
+
+      try {
+        if (typeof TicketNFT_EscrowContract !== 'undefined' && await TicketNFT_EscrowContract.isDeployed()) {
+          const result = await TicketNFT_EscrowContract.cancelOrder(orderId);
+          alert('Order cancelled! You will receive a full refund. Transaction: ' + result.hash);
+        } else {
+          // Simulate
+          this.updateSimulatedOrderStatus(orderId, 5);
+          alert('Order cancelled! (Simulated)');
+        }
+        await this.loadOrders();
+      } catch (err) {
+        console.error('Error cancelling order:', err);
+        alert('Error: ' + (err.reason || err.message));
+      }
+    },
+
+    updateSimulatedOrderStatus(orderId, status, disputeReason = '') {
+      const wallet = localStorage.getItem('ticketnft_wallet');
+      const key = `ticketnft_orders_${wallet.toLowerCase()}`;
+      const orders = this.getSimulatedOrders(wallet);
+      console.log('[Orders] Updating order', orderId, 'to status', status);
+      console.log('[Orders] Current orders:', orders);
+      const order = orders.find(o => o.orderId == orderId);
+      if (order) {
+        order.status = status;
+        order.statusText = ['Pending', 'Confirmed', 'Disputed', 'Refunded', 'Released', 'Cancelled'][status];
+        if (disputeReason) order.disputeReason = disputeReason;
+        localStorage.setItem(key, JSON.stringify(orders));
+        console.log('[Orders] Updated and saved:', orders);
+      } else {
+        console.warn('[Orders] Order not found:', orderId);
+      }
+    }
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    TicketNFT_Escrow.init();
+  });
+</script>
+
+<%- include('partials/footer') %>

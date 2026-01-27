@@ -1,1 +1,29 @@
-{}
+{
+  "network": "development",
+  "chainId": 1337,
+  "deployedAt": "2026-01-27T05:25:49.040Z",
+  "deployer": "0x27Ddbb58e2d513aC5AD61368651888A259544594",
+  "contracts": {
+    "PaymentEscrow": {
+      "address": "0x1a1aa84736CF3edb193Af58306653E7C3c37f2Ce",
+      "txHash": null
+    },
+    "TicketNFT": {
+      "address": "0x18Fe9bC086E895114B52e4B9C656e928f5ffe580",
+      "txHash": null
+    },
+    "LoyaltyToken": {
+      "address": "0x0c9d11789638e5C847ed5C5a7CcA23Ef66e7D528",
+      "txHash": null
+    }
+  },
+  "PaymentEscrow": {
+    "address": "0x1a1aa84736CF3edb193Af58306653E7C3c37f2Ce"
+  },
+  "TicketNFT": {
+    "address": "0x18Fe9bC086E895114B52e4B9C656e928f5ffe580"
+  },
+  "LoyaltyToken": {
+    "address": "0x0c9d11789638e5C847ed5C5a7CcA23Ef66e7D528"
+  }
+}

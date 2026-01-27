@@ -5,9 +5,17 @@
   "scripts": {
     "truffle:migrate": "truffle migrate --network development",
     "truffle:compile": "truffle compile",
-    "truffle:test": "truffle test"
+    "truffle:test": "truffle test",
+    "deploy:sepolia": "truffle migrate --network sepolia",
+    "deploy:sepolia:reset": "truffle migrate --network sepolia --reset",
+    "verify:sepolia": "truffle run verify TicketNFT PaymentEscrow LoyaltyToken --network sepolia"
   },
   "devDependencies": {
     "truffle": "^5.11.5"
+  },
+  "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.15",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.16.0"
   }
 }

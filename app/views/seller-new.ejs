@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <title>Create Event</title>
   <link rel="stylesheet" href="/public/css/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="section-head">
       <div>
         <h2>Create Event</h2>
-        <p class="muted">Set the seller payout wallet and basic event info.</p>
+        <p class="muted">Connect wallet and create event on blockchain.</p>
       </div>
       <a class="btn btn-ghost" href="/seller">← Back to Dashboard</a>
     </div>
@@ -19,37 +20,321 @@
       <div class="auth-error"><%= error %></div>
     <% } %>
 
-    <form class="stack" method="POST" action="/seller/events">
+    <!-- Wallet Connection -->
+    <div class="wallet-section">
+      <div class="wallet-status" id="walletStatus">
+        <span class="status-dot disconnected"></span>
+        <span>Wallet not connected</span>
+      </div>
+      <button class="btn btn-dark" type="button" id="connectWalletBtn">Connect MetaMask</button>
+    </div>
+
+    <form class="stack" id="createEventForm">
       <label class="auth-label">
-        Title
-        <input class="auth-input" type="text" name="title" placeholder="My Concert" required />
+        Title *
+        <input class="auth-input" type="text" name="title" id="title" placeholder="My Concert" required />
       </label>
       <label class="auth-label">
-        Seller Wallet (payout)
-        <input class="auth-input" type="text" name="sellerWallet" placeholder="0x..." />
+        Seller Wallet (payout) *
+        <input class="auth-input" type="text" name="sellerWallet" id="sellerWallet" placeholder="0x..." required />
+        <small class="muted">This address will receive payments when buyers confirm delivery</small>
       </label>
       <label class="auth-label">
         Date
-        <input class="auth-input" type="date" name="date" />
+        <input class="auth-input" type="date" name="date" id="date" />
       </label>
       <label class="auth-label">
         Time
-        <input class="auth-input" type="text" name="time" placeholder="8:00 PM" />
+        <input class="auth-input" type="text" name="time" id="time" placeholder="8:00 PM" />
       </label>
       <label class="auth-label">
         Venue
-        <input class="auth-input" type="text" name="venue" placeholder="Venue name" />
+        <input class="auth-input" type="text" name="venue" id="venue" placeholder="Venue name" />
       </label>
       <label class="auth-label">
         Image URL
-        <input class="auth-input" type="url" name="image" placeholder="https://..." />
+        <input class="auth-input" type="url" name="image" id="image" placeholder="https://..." />
       </label>
       <label class="auth-label">
         Description
-        <textarea class="auth-input" name="description" rows="4" placeholder="Event details"></textarea>
+        <textarea class="auth-input" name="description" id="description" rows="4" placeholder="Event details"></textarea>
       </label>
-      <button class="btn btn-primary" type="submit">Create Event</button>
+
+      <!-- Progress -->
+      <div class="progress-section" id="progressSection" style="display:none;">
+        <div class="progress-item" id="progress-chain">
+          <span class="progress-icon">⏳</span>
+          <span>Creating event on blockchain...</span>
+        </div>
+        <div class="progress-item" id="progress-save">
+          <span class="progress-icon">⏳</span>
+          <span>Saving event data...</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" type="submit" id="submitBtn">
+        Create Event (requires MetaMask)
+      </button>
     </form>
   </div>
+
+<style>
+  .wallet-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+
+  .wallet-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .status-dot.disconnected {
+    background: #ef4444;
+  }
+
+  .status-dot.connected {
+    background: #10b981;
+  }
+
+  .progress-section {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    color: #888;
+  }
+
+  .progress-item.success {
+    color: #10b981;
+  }
+
+  .progress-item.error {
+    color: #ef4444;
+  }
+
+  .progress-icon {
+    font-size: 18px;
+  }
+</style>
+
+<script>
+  let connectedWallet = null;
+  let ticketContract = null;
+
+  // Load contract
+  async function loadContract() {
+    const deployed = await fetch("/blockchain/web3/deployed.json")
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null);
+
+    if (!deployed?.TicketNFT?.address) {
+      // Try Truffle artifact
+      const artifact = await fetch("/blockchain/build/contracts/TicketNFT.json")
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null);
+
+      if (!artifact?.abi) return null;
+
+      const networks = artifact.networks || {};
+      const networkId = await window.ethereum.request({ method: "net_version" });
+      let address = networks?.[networkId]?.address;
+
+      if (!address) {
+        const entries = Object.values(networks);
+        if (entries.length === 1) address = entries[0]?.address;
+      }
+
+      if (!address) return null;
+      return { address, abi: artifact.abi };
+    }
+
+    const abi = await fetch("/blockchain/web3/abi/TicketNFT.json")
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null);
+
+    if (!abi) return null;
+    return { address: deployed.TicketNFT.address, abi };
+  }
+
+  // Connect wallet
+  document.getElementById('connectWalletBtn').addEventListener('click', async () => {
+    if (!window.ethereum) {
+      alert('Please install MetaMask!');
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      connectedWallet = accounts[0];
+
+      // Update UI
+      document.getElementById('walletStatus').innerHTML = `
+        <span class="status-dot connected"></span>
+        <span>Connected: ${connectedWallet.slice(0,6)}...${connectedWallet.slice(-4)}</span>
+      `;
+      document.getElementById('connectWalletBtn').textContent = 'Connected';
+      document.getElementById('connectWalletBtn').disabled = true;
+
+      // Auto-fill seller wallet if empty
+      if (!document.getElementById('sellerWallet').value) {
+        document.getElementById('sellerWallet').value = connectedWallet;
+      }
+
+      // Load contract
+      const contractData = await loadContract();
+      if (contractData) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        ticketContract = new ethers.Contract(contractData.address, contractData.abi, signer);
+        console.log('Contract loaded:', contractData.address);
+      } else {
+        console.warn('Contract not found');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to connect: ' + err.message);
+    }
+  });
+
+  // Form submit
+  document.getElementById('createEventForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value.trim();
+    const sellerWallet = document.getElementById('sellerWallet').value.trim();
+
+    if (!title) {
+      alert('Title is required');
+      return;
+    }
+
+    if (!sellerWallet || !sellerWallet.startsWith('0x')) {
+      alert('Valid seller wallet address is required');
+      return;
+    }
+
+    if (!connectedWallet) {
+      alert('Please connect your wallet first');
+      return;
+    }
+
+    const progressSection = document.getElementById('progressSection');
+    const progressChain = document.getElementById('progress-chain');
+    const progressSave = document.getElementById('progress-save');
+    const submitBtn = document.getElementById('submitBtn');
+
+    progressSection.style.display = 'block';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Creating...';
+
+    let chainEventId = null;
+
+    // Step 1: Create on blockchain
+    try {
+      if (ticketContract) {
+        progressChain.innerHTML = `<span class="progress-icon">⏳</span><span>Creating event on blockchain... (confirm in MetaMask)</span>`;
+
+        const tx = await ticketContract.createEvent(title, sellerWallet);
+        progressChain.innerHTML = `<span class="progress-icon">⏳</span><span>Waiting for confirmation...</span>`;
+
+        const receipt = await tx.wait();
+
+        // Parse EventCreated event to get eventId
+        for (const log of receipt.logs) {
+          try {
+            const parsed = ticketContract.interface.parseLog(log);
+            if (parsed?.name === 'EventCreated') {
+              chainEventId = Number(parsed.args.eventId);
+              break;
+            }
+          } catch (e) {}
+        }
+
+        progressChain.className = 'progress-item success';
+        progressChain.innerHTML = `<span class="progress-icon">✅</span><span>Event created on blockchain! (ID: ${chainEventId}, Tx: ${tx.hash.slice(0,10)}...)</span>`;
+      } else {
+        progressChain.className = 'progress-item';
+        progressChain.innerHTML = `<span class="progress-icon">⚠️</span><span>Contract not available, skipping blockchain (off-chain only)</span>`;
+      }
+    } catch (err) {
+      console.error('Blockchain error:', err);
+      progressChain.className = 'progress-item error';
+      progressChain.innerHTML = `<span class="progress-icon">❌</span><span>Blockchain error: ${err.reason || err.message}</span>`;
+
+      // Ask user if they want to continue without blockchain
+      if (!confirm('Failed to create on blockchain. Continue saving off-chain only?')) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Create Event (requires MetaMask)';
+        return;
+      }
+    }
+
+    // Step 2: Save to backend
+    try {
+      progressSave.innerHTML = `<span class="progress-icon">⏳</span><span>Saving event data...</span>`;
+
+      const formData = new FormData(document.getElementById('createEventForm'));
+      const data = {
+        title: formData.get('title'),
+        sellerWallet: formData.get('sellerWallet'),
+        date: formData.get('date'),
+        time: formData.get('time'),
+        venue: formData.get('venue'),
+        image: formData.get('image'),
+        description: formData.get('description'),
+        chainEventId: chainEventId
+      };
+
+      console.log('[CreateEvent] Saving to backend:', data);
+
+      const response = await fetch('/seller/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      console.log('[CreateEvent] Backend response:', response.status, result);
+
+      if (response.ok && result.success) {
+        progressSave.className = 'progress-item success';
+        progressSave.innerHTML = `<span class="progress-icon">✅</span><span>Event saved! (ID: ${result.event?.id || 'unknown'})</span>`;
+
+        setTimeout(() => {
+          window.location.href = '/seller';
+        }, 1500);
+      } else {
+        throw new Error(result.error || 'Failed to save');
+      }
+    } catch (err) {
+      console.error('[CreateEvent] Save error:', err);
+      progressSave.className = 'progress-item error';
+      progressSave.innerHTML = `<span class="progress-icon">❌</span><span>Failed to save: ${err.message}</span>`;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Event (requires MetaMask)';
+    }
+  });
+</script>
+
 </body>
 </html>

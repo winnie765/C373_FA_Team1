@@ -7,6 +7,7 @@
   <div class="nav-links">
     <a class="nav-link" href="/events">Events</a>
     <a class="nav-link" href="/mytickets">My Tickets</a>
+    <a class="nav-link" href="/tickets/orders">My Orders</a>
     <a class="nav-link" href="/rewards">Rewards</a>
     <a class="nav-link" href="/transactions">History</a>
     <a class="nav-link" href="/about">About</a>
@@ -38,6 +39,7 @@
 <script src="/blockchain/web3/config.js"></script>
 <script src="/blockchain/web3/ticketContract.js"></script>
 <script src="/blockchain/web3/rewardContract.js"></script>
+<script src="/blockchain/web3/escrowContract.js"></script>
 <script>
   window.TicketNFT_LoggedIn = <%= loggedIn ? "true" : "false" %>;
   window.TicketNFT_UserRole = "<%= loggedIn ? (authUserRole || "") : "" %>";

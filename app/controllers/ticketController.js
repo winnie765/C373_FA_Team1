@@ -30,3 +30,8 @@ export function myTickets(req, res) {
   // or from on-chain events if you extend later.
   res.render("myTickets", { title: "My Tickets" });
 }
+
+export function myOrders(req, res) {
+  // Orders are read client-side from blockchain or localStorage
+  res.render("orders", { title: "My Orders" });
+}

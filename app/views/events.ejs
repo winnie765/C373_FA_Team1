@@ -10,22 +10,24 @@
   </div>
 
   <div class="grid">
-    <% events.forEach(ev => { 
-      const anyAvailable = ev.ticketTypes.some(t => t.sold < t.maxSupply);
-      const status = anyAvailable ? "Available" : "Sold Out";
+    <% events.forEach(ev => {
+      const hasTickets = ev.ticketTypes && ev.ticketTypes.length > 0;
+      const anyAvailable = hasTickets && ev.ticketTypes.some(t => t.sold < t.maxSupply);
+      const status = !hasTickets ? "Coming Soon" : (anyAvailable ? "Available" : "Sold Out");
+      const minPrice = hasTickets ? Math.min(...ev.ticketTypes.map(t=>t.priceSGD)) : 0;
     %>
       <article class="card">
-        <div class="card-img" style="background-image:url('<%= ev.image %>')"></div>
+        <div class="card-img" style="background-image:url('<%= ev.image || "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1200&q=80" %>')"></div>
         <div class="card-body">
           <div class="card-top">
             <div>
               <div class="card-title"><%= ev.title %></div>
-              <div class="muted small"><%= ev.artist %> • <%= ev.date %> • <%= ev.venue %></div>
+              <div class="muted small"><%= ev.artist || "TBD" %> • <%= ev.date || "TBD" %> • <%= ev.venue || "TBD" %></div>
             </div>
-            <span class="badge <%= status === 'Available' ? 'ok' : 'bad' %>"><%= status %></span>
+            <span class="badge <%= status === 'Available' ? 'ok' : (status === 'Coming Soon' ? 'pending' : 'bad') %>"><%= status %></span>
           </div>
           <div class="card-bottom">
-            <div class="price">From $<%= Math.min(...ev.ticketTypes.map(t=>t.priceSGD)) %></div>
+            <div class="price"><%= hasTickets ? 'From $' + minPrice : 'Price TBD' %></div>
             <a class="btn btn-view btn-sm" href="/events/<%= ev.id %>">View Concert</a>
           </div>
         </div>

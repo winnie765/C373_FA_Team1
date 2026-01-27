@@ -6,7 +6,7 @@ window.TicketNFT_TicketContract = {
       .catch(() => null);
     if (!deployed?.TicketNFT?.address) return null;
 
-    const abi = await fetch("/blockchain/abi/TicketNFT.json")
+    const abi = await fetch("/blockchain/web3/abi/TicketNFT.json")
       .then(r => r.ok ? r.json() : null)
       .catch(() => null);
     if (!abi) return null;
@@ -48,7 +48,7 @@ window.TicketNFT_TicketContract = {
     const signer = await provider.getSigner();
     const code = await provider.getCode(deployed.address);
     if (!code || code === "0x") {
-      throw new Error("Contract not deployed on current network");
+      throw new Error("Contract not deployed on current network. Please switch to Ganache.");
     }
     const contract = new ethers.Contract(deployed.address, abi, signer);
     return { contract, deployed };

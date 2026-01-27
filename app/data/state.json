@@ -320,9 +320,29 @@
         "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
         "status": "Valid",
         "createdAt": "2026-01-23T08:28:19.108Z"
+      },
+      {
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 8,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "status": "Valid",
+        "createdAt": "2026-01-26T07:17:00.571Z"
       }
     ],
     "transactions": [
+      {
+        "type": "BUY_TICKET",
+        "eventId": 4,
+        "typeId": 0,
+        "tokenId": 8,
+        "wallet": "0x6fc601c266f4604a177b529b061f7446f0235d5a",
+        "valueEth": "0.08",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-26T07:17:00.571Z",
+        "hash": "0x906cf51e262c748352184ffb56063b0b211a863fd429cae8002e66438750c0a7"
+      },
       {
         "type": "BUY_TICKET",
         "eventId": 4,
@@ -608,7 +628,7 @@
         "hash": "0x4e2f77bf22072ed3a9814d8cb3be5f3ae499f29addf353797b9f2357d2c20436"
       }
     ],
-    "tok": 20
+    "tok": 30
   },
   "0x6e8ab59e5e3cd43a78b1b5449aa522952476f36a": {
     "tickets": [
@@ -675,6 +695,150 @@
         "hash": null
       }
     ],
+    "tok": 30
+  },
+  "0xbe4ae94cb80780917132c4779d8bea4e6804d792": {
+    "tickets": [],
+    "transactions": [],
     "tok": 20
+  },
+  "0x99f8c4e03181022125cab1a9929ab44027ad276a": {
+    "tickets": [
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 0,
+        "wallet": "0x99f8c4e03181022125cab1a9929ab44027ad276a",
+        "status": "Valid",
+        "createdAt": "2026-01-26T10:53:50.772Z"
+      },
+      {
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x99f8c4e03181022125cab1a9929ab44027ad276a",
+        "status": "Valid",
+        "createdAt": "2026-01-26T11:43:25.358Z"
+      }
+    ],
+    "transactions": [
+      {
+        "type": "BUY_TICKET",
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 1,
+        "wallet": "0x99f8c4e03181022125cab1a9929ab44027ad276a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-26T11:43:25.358Z",
+        "hash": "0x85bd0245054edd8520f1d30af7bf7735621b164d8f2941a4906ef93d63bb798b"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 0,
+        "wallet": "0x99f8c4e03181022125cab1a9929ab44027ad276a",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-26T10:53:50.772Z",
+        "hash": "0xfdc09448b679db3f9de3976de2173beacc5087d472deed8035682474d5577e99"
+      }
+    ],
+    "tok": 40
+  },
+  "0x70997970c51812dc3a010c7d01b50e0d17dc79c8": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 40
+  },
+  "0x2e8fa8dd849c8ade851d3bc571e7029db9fa4f59": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0x1fc005c6ce483e24f92033fb05dc54bee36c0afb": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0x94c304ad6edc2596abc9edd5587e937863d9c0eb": {
+    "tickets": [
+      {
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 744485,
+        "wallet": "0x94c304ad6edc2596abc9edd5587e937863d9c0eb",
+        "status": "Valid",
+        "createdAt": "2026-01-26T11:59:04.485Z"
+      },
+      {
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 2,
+        "wallet": "0x94c304ad6edc2596abc9edd5587e937863d9c0eb",
+        "status": "Valid",
+        "createdAt": "2026-01-26T12:55:51.130Z"
+      }
+    ],
+    "transactions": [
+      {
+        "type": "BUY_TICKET",
+        "eventId": 1,
+        "typeId": 0,
+        "tokenId": 2,
+        "wallet": "0x94c304ad6edc2596abc9edd5587e937863d9c0eb",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-26T12:55:51.130Z",
+        "hash": "0xe92ece5dfe71895323c8465aa77c260c822d0aa58074ae4f2a690a932f796c71"
+      },
+      {
+        "type": "BUY_TICKET",
+        "eventId": 3,
+        "typeId": 0,
+        "tokenId": 744485,
+        "wallet": "0x94c304ad6edc2596abc9edd5587e937863d9c0eb",
+        "valueEth": "0.001",
+        "discountEth": 0,
+        "tokSpent": 0,
+        "createdAt": "2026-01-26T11:59:04.485Z",
+        "hash": "0x3d5675f7a2e6ec17c9062fc18255304d92209f4687f4532ab4a19eb925b88de6"
+      }
+    ],
+    "tok": 40
+  },
+  "0xd09dc26f1c20e85879863a7e932735749efc1835": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0x90f79bf6eb2c4f870365e785982e1f101e93b906": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0x5ce38cfb6698c437d76436df6d5f30355fde6a8c": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 20
+  },
+  "0x8ba5e8a9902a990af80175dcbd56e38fc9584da9": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 30
+  },
+  "0xdf3752264d943a917b98d1fdbee2017eb49bfd4d": {
+    "tickets": [],
+    "transactions": [],
+    "tok": 30
   }
 }
